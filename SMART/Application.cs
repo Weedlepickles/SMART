@@ -17,6 +17,8 @@ namespace SMART
 			this.RenderFrame += new EventHandler<FrameEventArgs>(OnRenderFrame);
 			this.Resize += new EventHandler<EventArgs>(OnResize);
 			this.Load += new EventHandler<EventArgs>(OnLoad);
+
+			new Scene();
 		}
 
 		private void OnLoad(object sender, EventArgs e)
