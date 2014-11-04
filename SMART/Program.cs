@@ -9,9 +9,12 @@ namespace SMART
 {
 	class Program
 	{
+		static Application Window = new Application();
+
 		static void Main(string[] args)
 		{
-			Debug.WriteLine("Jag är bäst, du är en häst!");
+			//Debug.WriteLine("Jag är bäst, du är en häst!");
+			Window.Run(1, 1);
 		}
 	}
 }
