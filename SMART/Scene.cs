@@ -15,7 +15,13 @@ namespace SMART
 
 		public Scene()
 		{
-			my_sphere = new Jitter.Collision.Shapes.SphereShape(1);
+			// ######   #     #   ####      #            #
+            // #        ##   ##   #   #    # #     ####   #
+            // ####     # # # #   ####    #   #            #
+            // #        #  #  #   #       #####    ####   #
+            // ######   #     #   #      #     #         #
+            
+            my_sphere = new Jitter.Collision.Shapes.SphereShape(1);
 			my_rigidbody = new Jitter.Dynamics.RigidBody(my_sphere);
 
 			my_rigidbody.AddForce(Jitter.LinearMath.JVector.Down * 5);
