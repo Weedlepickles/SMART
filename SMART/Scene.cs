@@ -20,7 +20,7 @@ namespace SMART
             // ####     # # # #   ####    #   #            #
             // #        #  #  #   #       #####    ####   #
             // ######   #     #   #      #     #         #
-            
+
             my_sphere = new Jitter.Collision.Shapes.SphereShape(1);
 			my_rigidbody = new Jitter.Dynamics.RigidBody(my_sphere);
 

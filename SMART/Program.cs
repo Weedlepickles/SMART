@@ -11,6 +11,7 @@ namespace SMART
 	{
 		static Application Window = new Application();
 
+		[STAThread]
 		static void Main(string[] args)
 		{
 			//Debug.WriteLine("Jag är bäst, du är en häst!");
