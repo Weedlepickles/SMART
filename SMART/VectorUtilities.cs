@@ -10,5 +10,6 @@ namespace SMART
 	class VectorUtilities
 	{
 
+
 	}
 }

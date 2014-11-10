@@ -1,0 +1,18 @@
+﻿#version 400
+
+// layout(location = 0)in vec4 vert;
+
+in  vec3  in_Position;
+in  vec3  in_Normal;
+in  vec2  in_TexCoord;
+
+uniform mat4 projection;
+uniform mat4 view;
+
+out float shade;
+
+void main()
+{
+	shade = (mat3(view)*in_Normal).z; // Fake shading
+	gl_Position = projection * view * vec4(in_Position, 1.0);
+}
