@@ -10,83 +10,91 @@ using System.Diagnostics;
 
 namespace SMART
 {
-	class Application : GameWindow
+	public class Application : GameWindow
 	{
-		private int mShaderProgram;
-		private Matrix4 mViewMatrix, mProjectionMatrix, mModelMatrix;
-		private Vector3 objectLocation = Vector3.UnitX;
-		private ObjMesh sphere;
-		ObjMesh myTriangle;
+		private ObjMesh Sphere;
+
+        private Matrix4 ProjectionMatrix;
+        private Matrix4 WorldMatrix;
+        private Matrix4 ModelviewMatrix;
+
+        private Vector3 CameraPosition;
+        private Shader Shader;
 
 		public Application()
 			: base(400, 400)
 		{
 			this.RenderFrame += new EventHandler<FrameEventArgs>(OnRenderFrame);
-			this.Resize += new EventHandler<EventArgs>(OnResize);
+            this.Resize += new EventHandler<EventArgs>(OnResize);
 			this.Load += new EventHandler<EventArgs>(OnLoad);
-
+            this.UpdateFrame += new EventHandler<FrameEventArgs>(OnUpdateFrame);
 			new Scene();
 		}
 
 		private void OnLoad(object sender, EventArgs e)
 		{
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-			myTriangle = ObjMesh.CreateTriangle();
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
 
-			this.VSync = VSyncMode.On;
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Width / (float)Height, 0.1f, 1000.0f);
+            WorldMatrix = new Matrix4();
+            ModelviewMatrix = new Matrix4();
 
-			string vertexShaderFileName = "Shaders/Basic.vertex";
-			string fragmentShaderFileName = "Shaders/Basic.fragment";
+            CameraPosition = new Vector3(0, 0, 0);
 
-			int vertexShader = GLUtilities.LoadShader(vertexShaderFileName, ShaderType.VertexShader);
-			int fragmentShader = GLUtilities.LoadShader(fragmentShaderFileName, ShaderType.FragmentShader);
+            string vertex_source = System.IO.File.ReadAllText("Shaders/Basic.vertex");
+            string fragment_source = System.IO.File.ReadAllText("Shaders/Basic.fragment");
 
-			// Set clearcolor.
-			GL.ClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-			GL.Enable(EnableCap.DepthTest);
-			GL.Enable(EnableCap.CullFace);
-			GL.CullFace(CullFaceMode.Back);
+            Shader = new Shader(ref vertex_source, ref fragment_source);
 
-			// create a shader object.
-			mShaderProgram = GLUtilities.CreateProgram(vertexShader, fragmentShader);
-			GL.UseProgram(mShaderProgram);
+            //Sphere = new ObjMesh("Models/tetrahedron.obj");
+            Sphere = new ObjMesh(0.7f, 32);
 
-			mProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView((float)(Math.PI / 2), 1.0f, 0.1f, 1000f);
-			mViewMatrix = Matrix4.LookAt(Vector3.Zero, objectLocation, Vector3.UnitY);
+            //Prepare meshes here
+            Sphere.Prepare();
 
-			mModelMatrix = Matrix4.Identity;
-			mModelMatrix.Column3 = new Vector4(0, 0, 10, 1); //Place the oject at (0,0,10)
-
-			sphere = new ObjMesh("Models/sphere.obj");
-			//ALL DONE!
 		}
 
-		private void OnResize(object sender, EventArgs e)
-		{
-			GL.Viewport(0, 0, this.Width, this.Height);
+        private void OnUpdateFrame(object sender, FrameEventArgs e)
+        {
+            WorldMatrix = Matrix4.CreateTranslation(-CameraPosition);
+            ModelviewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, -4.0f);
 
-			OnRenderFrame(null, null);
+            //Matrix4 MVP_Matrix = ModelviewMatrix * WorldMatrix * ProjectionMatrix;
+            Matrix4 MV_Matrix = ModelviewMatrix * WorldMatrix;
+
+
+            GL.UseProgram(Shader.Program);
+
+            int mv_matrix_location = GL.GetUniformLocation(Shader.Program, "mv_matrix");
+            GL.UniformMatrix4(mv_matrix_location, false, ref MV_Matrix);
+            int p_matrix_location = GL.GetUniformLocation(Shader.Program, "p_matrix");
+            GL.UniformMatrix4(p_matrix_location, false, ref ProjectionMatrix);
+
+            GL.UseProgram(0);
+        }
+
+        private void OnResize(object sender, EventArgs e)
+		{
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Width / (float)Height, 0.1f, 1000.0f);
+			OnRenderFrame(this, null);
 		}
 
-		private void OnRenderFrame(object sender, EventArgs e)
+		private void OnRenderFrame(object sender, FrameEventArgs e)
 		{
+            GL.Viewport(0, 0, Width, Height);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-			Matrix4 modelView = mViewMatrix * mModelMatrix;
+            GL.UseProgram(Shader.Program);
 
-			// render graphics
-			GL.ClearColor(new Color4(123, 123, 13, 255));
-			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-			GL.UseProgram(mShaderProgram);
-			GL.UniformMatrix4(GL.GetUniformLocation(mShaderProgram, "projection"), true, ref mProjectionMatrix);
-			GL.UniformMatrix4(GL.GetUniformLocation(mShaderProgram, "view"), true, ref modelView);
-
-			//Draw object here
-			//GL.UniformMatrix4(GL.GetUniformLocation(mShaderProgram, "model"), true, ref mModelMatrix);
-			//sphere.Render(mShaderProgram, "in_Position", "in_Normal", null);
-			myTriangle.Render2(mShaderProgram, "in_Position", "in_Normal", null);
-
-			SwapBuffers();
+            //Render meshes here
+            Sphere.Render(Shader);
+            
+            GL.UseProgram(0);
+            SwapBuffers();
 		}
 	}
 }

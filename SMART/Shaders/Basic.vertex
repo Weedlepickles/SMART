@@ -1,18 +1,16 @@
 ﻿#version 400
+layout (location = 0) in vec3 vertex_position;
+layout (location = 1) in vec3 vertex_normal;
+layout (location = 2) in vec2 vertex_texcoord;
 
-// layout(location = 0)in vec4 vert;
+//uniform mat4 mvp_matrix;
+uniform mat4 mv_matrix;
+uniform mat4 p_matrix;
 
-in  vec3  in_Position;
-in  vec3  in_Normal;
-in  vec2  in_TexCoord;
+out float color;
 
-uniform mat4 projection;
-uniform mat4 view;
-
-out float shade;
-
-void main()
+void main(void)
 {
-	shade = (mat3(view)*in_Normal).z; // Fake shading
-	gl_Position = projection * view * vec4(in_Position, 1.0);
+    color = (mat3(mv_matrix)*vertex_normal).z;
+    gl_Position = p_matrix * mv_matrix * vec4(vertex_position, 1.0);
 }

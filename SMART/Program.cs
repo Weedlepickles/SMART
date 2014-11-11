@@ -15,7 +15,7 @@ namespace SMART
 		static void Main(string[] args)
 		{
 			//Debug.WriteLine("Jag är bäst, du är en häst!");
-			Window.Run(1, 1);
+			Window.Run(60, 60);
 		}
 	}
 }

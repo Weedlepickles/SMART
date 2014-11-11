@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SMART
 {
 	public class ObjMeshLoader
 	{
-		public static bool Load(ObjMesh mesh, string fileName)
+		public static bool LoadObj(ObjMesh mesh, string fileName)
 		{
 			try
 			{
@@ -24,22 +25,34 @@ namespace SMART
 			}
 			catch (Exception e)
 			{
-
+                Debug.WriteLine(e.Message);
 				return false;
 			}
 		}
 
-		static char[] splitCharacters = new char[] { ' ' };
+        public static bool LoadSphere(ObjMesh mesh, float radius, int resolution)
+        {
+            if (mesh == null || resolution < 3) return false;
+            int rings = (byte)Math.Ceiling(resolution / 2.0);
+            if (rings % 2 == 0) rings++;
+            mesh.Vertices = CalculateSphereVertices(radius, radius, (byte)resolution, (byte)rings);
+            return true;
+        }
 
-		static List<Vector3> vertices;
-		static List<Vector3> normals;
-		static List<Vector2> texCoords;
-		static Dictionary<ObjMesh.ObjVertex, int> objVerticesIndexDictionary;
-		static List<ObjMesh.ObjVertex> objVertices;
-		static List<ObjMesh.ObjTriangle> objTriangles;
-		static List<ObjMesh.ObjQuad> objQuads;
+        #region Private
 
-		static void Load(ObjMesh mesh, TextReader textReader)
+        private static char[] splitCharacters = new char[] { ' ' };
+        private static char[] faceParamaterSplitter = new char[] { '/' };
+
+        private static List<Vector3> vertices;
+        private static List<Vector3> normals;
+        private static List<Vector2> texCoords;
+        private static Dictionary<ObjMesh.ObjVertex, int> objVerticesIndexDictionary;
+        private static List<ObjMesh.ObjVertex> objVertices;
+        private static List<ObjMesh.ObjTriangle> objTriangles;
+        private static List<ObjMesh.ObjQuad> objQuads;
+
+		private static void Load(ObjMesh mesh, TextReader textReader)
 		{
 			vertices = new List<Vector3>();
 			normals = new List<Vector3>();
@@ -65,7 +78,6 @@ namespace SMART
 					case "v": // Vertex
 						float x = float.Parse(parameters[1], enUSCulture);
 						float y = float.Parse(parameters[2], enUSCulture);
-						//CultureInfo.GetCultureInfo()
 						float z = float.Parse(parameters[3], enUSCulture); 
 						vertices.Add(new Vector3(x, y, z));
 						break;
@@ -120,8 +132,7 @@ namespace SMART
 			objQuads = null;
 		}
 
-		static char[] faceParamaterSplitter = new char[] { '/' };
-		static int ParseFaceParameter(string faceParameter)
+        private static int ParseFaceParameter(string faceParameter)
 		{
 			Vector3 vertex = new Vector3();
 			Vector2 texCoord = new Vector2();
@@ -153,7 +164,7 @@ namespace SMART
 			return FindOrAddObjVertex(ref vertex, ref texCoord, ref normal);
 		}
 
-		static int FindOrAddObjVertex(ref Vector3 vertex, ref Vector2 texCoord, ref Vector3 normal)
+        private static int FindOrAddObjVertex(ref Vector3 vertex, ref Vector2 texCoord, ref Vector3 normal)
 		{
 			ObjMesh.ObjVertex newObjVertex = new ObjMesh.ObjVertex();
 			newObjVertex.Vertex = vertex;
@@ -172,5 +183,65 @@ namespace SMART
 				return objVertices.Count - 1;
 			}
 		}
-	}
+
+        private static ObjMesh.ObjVertex[] CalculateSphereVertices(float radius, float height, byte segments, byte rings)
+        {
+            List<List<ObjMesh.ObjVertex>> vertices = new List<List<ObjMesh.ObjVertex>>();
+
+            for (double y = 0; y < rings; y++)
+            {
+                List<ObjMesh.ObjVertex> ring = new List<ObjMesh.ObjVertex>();
+                double phi = (y / (rings - 1)) * Math.PI; //was /2 
+                for (double x = 0; x < segments; x++)
+                {
+                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+
+                    Vector3 v = new Vector3()
+                    {
+                        X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
+                        Y = (float)(height * Math.Cos(phi)),
+                        Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
+                    };
+                    Vector3 n = Vector3.Normalize(v);
+                    Vector2 uv = new Vector2()
+                    {
+                        X = (float)(x / (segments - 1)),
+                        Y = (float)(y / (rings - 1))
+                    };
+                    // Using data[i++] causes i to be incremented multiple times in Mono 2.2 (bug #479506).
+                    ring.Add(new ObjMesh.ObjVertex() {  Vertex = v, Normal = n, TexCoord = uv });
+                }
+                vertices.Add(ring);
+            }
+
+            List<ObjMesh.ObjVertex> data = new List<ObjMesh.ObjVertex>();
+            for (int ringId = 1; ringId < vertices.Count; ringId++)
+            {
+                for (int segId = 0; segId < vertices[ringId].Count - 1; segId++)
+                {
+                    bool isTop = (ringId == 1);
+                    bool isBottom = (ringId == vertices.Count - 1);
+
+                    if (!isBottom)
+                    {
+                        data.Add(vertices[ringId][segId]);
+                        data.Add(vertices[ringId-1][segId]);
+                        data.Add(vertices[ringId][segId+1]);
+                    }
+
+                    if (!isTop)
+                    {
+                        data.Add(vertices[ringId - 1][segId]);
+                        data.Add(vertices[ringId - 1][segId + 1]);
+                        data.Add(vertices[ringId][segId + 1]);
+                    }
+                }
+            }
+
+            return data.ToArray(); ;
+        }
+
+        #endregion
+
+    }
 }
