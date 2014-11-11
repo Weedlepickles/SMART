@@ -50,8 +50,11 @@ namespace SMART
 
             Shader = new Shader(ref vertex_source, ref fragment_source);
 
-            //Sphere = new ObjMesh("Models/tetrahedron.obj");
-            Sphere = new ObjMesh(0.7f, 32);
+            //Laddar en obj mesh
+            Sphere = new ObjMesh("Models/teapot.obj");
+
+            //Laddar en sfär med radie 4, upplösning 32
+            //Sphere = new ObjMesh(4.0f, 32);
 
             //Prepare meshes here
             Sphere.Prepare();
@@ -61,7 +64,7 @@ namespace SMART
         private void OnUpdateFrame(object sender, FrameEventArgs e)
         {
             WorldMatrix = Matrix4.CreateTranslation(-CameraPosition);
-            ModelviewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, -4.0f);
+            ModelviewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, -20.0f);
 
             //Matrix4 MVP_Matrix = ModelviewMatrix * WorldMatrix * ProjectionMatrix;
             Matrix4 MV_Matrix = ModelviewMatrix * WorldMatrix;

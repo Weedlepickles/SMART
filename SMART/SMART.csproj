@@ -60,6 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Models\stanford-bunny.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Models\teapot.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Models\tetrahedron.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

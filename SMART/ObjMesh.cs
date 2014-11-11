@@ -61,11 +61,25 @@ namespace SMART
 
         public void Prepare()
         {
-            mMeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, Vertices.Length);
-            foreach (ObjVertex v in Vertices)
+            if (triangles != null && triangles.Length > 0)
             {
-                mMeshBuffer.AddVertex(v.Vertex[0], v.Vertex[1], v.Vertex[2], v.Normal[0], v.Normal[1], v.Normal[2], v.TexCoord[0], v.TexCoord[1]);
+                mMeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, triangles.Length * 3);
+                foreach (ObjTriangle t in triangles)
+                {
+                    PrepareVertex(Vertices[t.Index0]);
+                    PrepareVertex(Vertices[t.Index1]);
+                    PrepareVertex(Vertices[t.Index2]);
+                }
             }
+            else
+            {
+                mMeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, Vertices.Length);
+                foreach (ObjVertex v in Vertices)
+                {
+                    PrepareVertex(v);
+                }
+            }
+            
             mMeshBuffer.IndexFromLength();
             mMeshBuffer.Load();
         }
@@ -73,6 +87,11 @@ namespace SMART
         public void Render(Shader shader)
         {
             mMeshBuffer.Bind(shader);
+        }
+
+        private void PrepareVertex(ObjVertex v)
+        {
+            mMeshBuffer.AddVertex(v.Vertex[0], v.Vertex[1], v.Vertex[2], v.Normal[0], v.Normal[1], v.Normal[2], v.TexCoord[0], v.TexCoord[1]);
         }
 
 		[StructLayout(LayoutKind.Sequential)]
