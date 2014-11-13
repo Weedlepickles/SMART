@@ -37,5 +37,10 @@ namespace SMART
 			my_world.Step(1, false);
 
 		}
+
+		public float GetGroundLevel(float x, float z)
+		{
+			return 0;
+		}
 	}
 }

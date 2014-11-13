@@ -12,14 +12,14 @@ namespace SMART
 {
 	public class Application : GameWindow
 	{
-		private ObjMesh Sphere;
+		private Skeleton pants;
 
         private Matrix4 ProjectionMatrix;
         private Matrix4 WorldMatrix;
-        private Matrix4 ModelviewMatrix;
 
         private Vector3 CameraPosition;
         private Shader Shader;
+		private long PrevTime;
 
 		public Application()
 			: base(400, 400)
@@ -41,7 +41,6 @@ namespace SMART
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Width / (float)Height, 0.1f, 1000.0f);
             WorldMatrix = new Matrix4();
-            ModelviewMatrix = new Matrix4();
 
             CameraPosition = new Vector3(0, 0, 0);
 
@@ -50,35 +49,46 @@ namespace SMART
 
             Shader = new Shader(ref vertex_source, ref fragment_source);
 
-            //Laddar en obj mesh
-            Sphere = new ObjMesh("Models/teapot.obj");
+			PrevTime = DateTime.Now.Millisecond;
 
+            //Laddar en obj mesh
+			pants = Skeleton.CreatePants();
+			pants.SetPosition(new Vector3(0, 0, -10));
             //Laddar en sfär med radie 4, upplösning 32
             //Sphere = new ObjMesh(4.0f, 32);
 
             //Prepare meshes here
-            Sphere.Prepare();
 
 		}
 
         private void OnUpdateFrame(object sender, FrameEventArgs e)
         {
-            WorldMatrix = Matrix4.CreateTranslation(-CameraPosition);
-            ModelviewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, -20.0f);
+			WorldMatrix = Matrix4.CreateTranslation(-CameraPosition);
+            
 
             //Matrix4 MVP_Matrix = ModelviewMatrix * WorldMatrix * ProjectionMatrix;
-            Matrix4 MV_Matrix = ModelviewMatrix * WorldMatrix;
-
 
             GL.UseProgram(Shader.Program);
 
-            int mv_matrix_location = GL.GetUniformLocation(Shader.Program, "mv_matrix");
-            GL.UniformMatrix4(mv_matrix_location, false, ref MV_Matrix);
             int p_matrix_location = GL.GetUniformLocation(Shader.Program, "p_matrix");
             GL.UniformMatrix4(p_matrix_location, false, ref ProjectionMatrix);
+			int mv_matrix_location = GL.GetUniformLocation(Shader.Program, "v_matrix");
+			GL.UniformMatrix4(mv_matrix_location, false, ref WorldMatrix);
 
             GL.UseProgram(0);
+			long currentTime = PrevTime = DateTime.Now.Millisecond;
+			pants.Update(currentTime - PrevTime);
+			PrevTime = currentTime;
+
+			UpdateState(TimeSpan.Zero);
         }
+
+		private void UpdateState(TimeSpan deltaTime)
+		{
+			//UpdateScene(deltaTime);
+			//UpdateAI(deltaTime);
+		}
+
 
         private void OnResize(object sender, EventArgs e)
 		{
@@ -86,15 +96,26 @@ namespace SMART
 			OnRenderFrame(this, null);
 		}
 
+		float rot = 0;
 		private void OnRenderFrame(object sender, FrameEventArgs e)
 		{
-            GL.Viewport(0, 0, Width, Height);
+			//ModelviewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, -20.0f);
+			
+			GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(Shader.Program);
 
             //Render meshes here
-            Sphere.Render(Shader);
+			pants.SetRotation(new Vector3(0, rot * (float)Math.PI * 2, 0));
+			pants.GetRootBone().SetRotation(new Vector3(0, 0, rot * (float)Math.PI));
+			pants.GetRootBone().GetChildren()[0].SetRotation(new Vector3(rot * (float)Math.PI * 4, 0, 0));
+			rot += 0.01f;
+			if (rot > 2)
+			{
+				rot = 0;
+			}
+            pants.Render(Shader);
             
             GL.UseProgram(0);
             SwapBuffers();

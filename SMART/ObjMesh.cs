@@ -22,6 +22,7 @@ namespace SMART
         public ObjMesh(string fileName)
 		{
 			ObjMeshLoader.LoadObj(this, fileName);
+			Prepare();
 		}
 
         /// <summary>
@@ -32,6 +33,7 @@ namespace SMART
         public ObjMesh(float radius, int resolution)
         {
             ObjMeshLoader.LoadSphere(this, radius, resolution);
+			Prepare();
         }
 
 		public ObjMesh()
@@ -86,7 +88,7 @@ namespace SMART
 
         public void Render(Shader shader)
         {
-            mMeshBuffer.Bind(shader);
+			mMeshBuffer.Bind(shader);
         }
 
         private void PrepareVertex(ObjVertex v)

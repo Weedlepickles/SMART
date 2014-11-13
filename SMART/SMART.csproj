@@ -49,12 +49,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="Bone.cs" />
+    <Compile Include="ForceMuscle.cs" />
+    <Compile Include="Muscle.cs" />
     <Compile Include="ObjMesh.cs" />
     <Compile Include="ObjMeshLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="Skeleton.cs" />
     <Compile Include="VectorUtilities.cs" />
     <Compile Include="VertexFloatBuffer.cs" />
   </ItemGroup>
