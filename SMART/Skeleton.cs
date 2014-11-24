@@ -19,7 +19,8 @@ namespace SMART
 
 		public static Skeleton CreatePants()
 		{
-			ObjMesh mesh = new ObjMesh(.45f, 8);
+			//ObjMesh mesh = new ObjMesh(.45f, 8);
+			ObjMesh mesh = new ObjMesh(0.3f, 0.8f, 16);
 			Bone rootBone = new Bone(new Vector3(0, 1, 0), mesh);
 			rootBone.SetColor(Color.DarkGoldenrod);
 

@@ -12,17 +12,13 @@ namespace SMART
 {
 	public class ObjMesh
 	{
-        public enum MeshShape
-        {
-            Sphere
-        };
         
-        private VertexFloatBuffer mMeshBuffer;
+        private VertexFloatBuffer MeshBuffer;
         
         public ObjMesh(string fileName)
 		{
 			ObjMeshLoader.LoadObj(this, fileName);
-			Prepare();
+			CreateAndLoadVBO();
 		}
 
         /// <summary>
@@ -33,8 +29,20 @@ namespace SMART
         public ObjMesh(float radius, int resolution)
         {
             ObjMeshLoader.LoadSphere(this, radius, resolution);
-			Prepare();
+			CreateAndLoadVBO();
         }
+
+		/// <summary>
+		/// Use this constructor to create a cylinder
+		/// </summary>
+		/// <param name="radius">Radius of the cylinder</param>
+		/// <param name="length">Length of the cylinder</param>
+		/// <param name="resolution">The number of segments of the cylinder</param>
+		public ObjMesh(float radius, float length, int resolution)
+		{
+			ObjMeshLoader.LoadCylinder(this, radius, length, resolution);
+			CreateAndLoadVBO();
+		}
 
 		public ObjMesh()
 		{
@@ -61,39 +69,39 @@ namespace SMART
 		}
 		ObjQuad[] quads;
 
-        public void Prepare()
+        private void CreateAndLoadVBO()
         {
             if (triangles != null && triangles.Length > 0)
             {
-                mMeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, triangles.Length * 3);
-                foreach (ObjTriangle t in triangles)
+                MeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, Triangles.Length * 3);
+				foreach (ObjTriangle t in Triangles)
                 {
-                    PrepareVertex(Vertices[t.Index0]);
-                    PrepareVertex(Vertices[t.Index1]);
-                    PrepareVertex(Vertices[t.Index2]);
+                    AddVertexToMeshBuffer(Vertices[t.Index0]);
+                    AddVertexToMeshBuffer(Vertices[t.Index1]);
+                    AddVertexToMeshBuffer(Vertices[t.Index2]);
                 }
             }
             else
             {
-                mMeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, Vertices.Length);
+                MeshBuffer = new VertexFloatBuffer(VertexFormat.XYZ_NORMAL_UV, Vertices.Length);
                 foreach (ObjVertex v in Vertices)
                 {
-                    PrepareVertex(v);
+                    AddVertexToMeshBuffer(v);
                 }
             }
             
-            mMeshBuffer.IndexFromLength();
-            mMeshBuffer.Load();
+            MeshBuffer.IndexFromLength();
+            MeshBuffer.Load();
         }
 
         public void Render(Shader shader)
         {
-			mMeshBuffer.Bind(shader);
+			MeshBuffer.Bind(shader);
         }
 
-        private void PrepareVertex(ObjVertex v)
+        private void AddVertexToMeshBuffer(ObjVertex v)
         {
-            mMeshBuffer.AddVertex(v.Vertex[0], v.Vertex[1], v.Vertex[2], v.Normal[0], v.Normal[1], v.Normal[2], v.TexCoord[0], v.TexCoord[1]);
+            MeshBuffer.AddVertex(v.Vertex[0], v.Vertex[1], v.Vertex[2], v.Normal[0], v.Normal[1], v.Normal[2], v.TexCoord[0], v.TexCoord[1]);
         }
 
 		[StructLayout(LayoutKind.Sequential)]
