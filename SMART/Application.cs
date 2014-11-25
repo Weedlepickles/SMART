@@ -12,7 +12,7 @@ namespace SMART
 {
 	public class Application : GameWindow
 	{
-		private Skeleton pants;
+		private Skeleton ActiveSkeleton;
 
         private Matrix4 ProjectionMatrix;
         private Matrix4 WorldMatrix;
@@ -52,9 +52,13 @@ namespace SMART
 			PrevTime = DateTime.Now.Millisecond;
 
             //Laddar en obj mesh
-			pants = Skeleton.CreatePants();
-			pants.SetPosition(new Vector3(0, 0, -10));
-            //Laddar en sfär med radie 4, upplösning 32
+			//pants = Skeleton.CreatePants();
+			//pants.SetPosition(new Vector3(0, 0, -10));
+
+			ActiveSkeleton = new Skeleton("ToePants.skeleton");
+			ActiveSkeleton.SetPosition(new Vector3(0, 2, -10));
+			
+			//Laddar en sfär med radie 4, upplösning 32
             //Sphere = new ObjMesh(4.0f, 32);
 
             //Prepare meshes here
@@ -77,7 +81,7 @@ namespace SMART
 
             GL.UseProgram(0);
 			long currentTime = PrevTime = DateTime.Now.Millisecond;
-			pants.Update(currentTime - PrevTime);
+			ActiveSkeleton.Update(currentTime - PrevTime);
 			PrevTime = currentTime;
 
 			UpdateState(TimeSpan.Zero);
@@ -107,15 +111,17 @@ namespace SMART
             GL.UseProgram(Shader.Program);
 
             //Render meshes here
-			pants.SetRotation(new Vector3(0, rot * (float)Math.PI * 2, 0));
-			pants.GetRootBone().SetRotation(new Vector3(0, 0, rot * (float)Math.PI));
-			pants.GetRootBone().GetChildren()[0].SetRotation(new Vector3(rot * (float)Math.PI * 4, 0, 0));
-			rot += 0.01f;
-			if (rot > 2)
-			{
-				rot = 0;
-			}
-            pants.Render(Shader);
+			//pants.SetRotation(new Vector3(0, rot * (float)Math.PI * 2, 0));
+			//pants.GetRootBone().SetRotation(new Vector3(0, 0, rot * (float)Math.PI));
+			//pants.GetRootBone().GetChildren()[0].SetRotation(new Vector3(rot * (float)Math.PI * 4, 0, 0));
+			//rot += 0.01f;
+			//if (rot > 2)
+			//{
+			//	rot = 0;
+			//}
+			//pants.Render(Shader);
+
+			ActiveSkeleton.Render(Shader);
             
             GL.UseProgram(0);
             SwapBuffers();

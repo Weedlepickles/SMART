@@ -14,6 +14,7 @@ namespace SMART
 		[STAThread]
 		static void Main(string[] args)
 		{
+			Window.Title = "S.M.A.R.T.";
 			Window.Run(60, 60);
 		}
 	}

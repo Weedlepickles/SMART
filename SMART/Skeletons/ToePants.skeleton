@@ -1,0 +1,33 @@
+﻿CreationState
+Node Root 0 0 0
+Node 2 -1 -0.25 0
+Node 3 1 -0.25 0
+Node 4 0 -2 0
+Node 5 0 -2 0
+Node 6 0 -2 0
+Node 7 0 -2 0
+Node 8 0.25 0 0.4
+Node 9 -0.25 0 0.4
+Node 10 0.25 0 0.4
+Node 11 -0.25 0 0.4
+
+LinkState
+Node Root Children 2 3
+Node 2 Children 4
+Node 3 Children 5
+Node 4 Children 6
+Node 5 Children 7
+Node 6 Children 8 9
+Node 7 Children 10 11
+
+ FreedomState
+ Node 2 Normal z Freedom 30 30
+ Node 2 Normal rotation Freedom 10 10
+ Node 3 Normal z Freedom 30 30
+ Node 3 Normal rotation Freedom 10 10
+ Node 6 Normal x Freedom 135 5
+ Node 7 Normal x Freedom 135 5
+ Node 8 Normal x Freedom 45 45
+ Node 9 Normal x Freedom 45 45
+ Node 10 Normal x Freedom 45 45
+ Node 11 Normal x Freedom 45 45
