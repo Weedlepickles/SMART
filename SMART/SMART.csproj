@@ -100,6 +100,9 @@
     <None Include="Shaders\Basic.vertex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Skeletons\ToePants.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AI\AITest\AITestForm.resx">

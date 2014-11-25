@@ -14,7 +14,8 @@ namespace SMART
 		[STAThread]
 		static void Main(string[] args)
 		{
-			//Run application
+            //Run application
+            Window.Title = "S.M.A.R.T.";
 			Window.Run(60, 60);
 
             //Run AI test application

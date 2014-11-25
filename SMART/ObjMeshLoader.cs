@@ -25,32 +25,167 @@ namespace SMART
 			}
 			catch (Exception e)
 			{
-                Debug.WriteLine(e.Message);
+				Debug.WriteLine(e.Message);
 				return false;
 			}
 		}
 
-        public static bool LoadSphere(ObjMesh mesh, float radius, int resolution)
-        {
-            if (mesh == null || resolution < 3) return false;
-            int rings = (byte)Math.Ceiling(resolution / 2.0);
-            if (rings % 2 == 0) rings++;
-            mesh.Vertices = CalculateSphereVertices(radius, radius, (byte)resolution, (byte)rings);
-            return true;
-        }
+		public static bool LoadSphere(ObjMesh mesh, float radius, int resolution)
+		{
+			if (mesh == null || resolution < 3) return false;
+			int rings = (byte)Math.Ceiling(resolution / 2.0);
+			if (rings % 2 == 0) rings++;
+			mesh.Vertices = CalculateSphereVertices(radius, radius, (byte)resolution, (byte)rings);
+			return true;
+		}
 
-        #region Private
+		public static bool LoadCylinder(ObjMesh mesh, float radius, float length, int resolution)
+		{
+			if (mesh == null || resolution < 3) return false;
+			mesh.Vertices = CalculateCylinderVertices(radius, length, resolution);
+			return true;
+		}
 
-        private static char[] splitCharacters = new char[] { ' ' };
-        private static char[] faceParamaterSplitter = new char[] { '/' };
+		private static ObjMesh.ObjVertex[] CalculateCylinderVertices(float radius, float length, int segments)
+		{
+			List<List<ObjMesh.ObjVertex>> vertices = new List<List<ObjMesh.ObjVertex>>();
 
-        private static List<Vector3> vertices;
-        private static List<Vector3> normals;
-        private static List<Vector2> texCoords;
-        private static Dictionary<ObjMesh.ObjVertex, int> objVerticesIndexDictionary;
-        private static List<ObjMesh.ObjVertex> objVertices;
-        private static List<ObjMesh.ObjTriangle> objTriangles;
-        private static List<ObjMesh.ObjQuad> objQuads;
+			ObjMesh.ObjVertex[] baseCircleVertices = new ObjMesh.ObjVertex[segments];
+			ObjMesh.ObjVertex[] topCircleVertices = new ObjMesh.ObjVertex[segments];
+
+			//Center vertex for the base side
+			ObjMesh.ObjVertex baseVertex = new ObjMesh.ObjVertex();
+			baseVertex.Vertex = new Vector3(0, 0, length / 2);
+			baseVertex.Normal = new Vector3(0, 0, 1);
+			baseVertex.TexCoord = new Vector2(1); //Don't know what this should be
+
+			//Center vertex for the top side
+			ObjMesh.ObjVertex topVertex = new ObjMesh.ObjVertex();
+			topVertex.Vertex = new Vector3(0, 0, -length / 2);
+			topVertex.Normal = new Vector3(0, 0, -1);
+			topVertex.TexCoord = new Vector2(1); //Don't know what this should be
+
+			double angleIncrement = 2 * Math.PI / segments;
+
+			double x = 0;
+			double y = 0;
+			double z = length / 2;
+			for (int i = 0; i < segments; i++)
+			{
+				ObjMesh.ObjVertex baseCircleVertex = new ObjMesh.ObjVertex();
+				ObjMesh.ObjVertex topCircleVertex = new ObjMesh.ObjVertex();
+
+				x = radius * Math.Cos(i * angleIncrement);
+				y = radius * Math.Sin(i * angleIncrement);
+
+				baseCircleVertex.Vertex = new Vector3((float)x, (float)y, (float)z);
+				topCircleVertex.Vertex = new Vector3((float)x, (float)y, (float)-z); //Facing the other way (Z)
+
+				baseCircleVertex.Normal = Vector3.Normalize(baseCircleVertex.Vertex);
+				topCircleVertex.Normal = Vector3.Normalize(topCircleVertex.Vertex);
+
+				baseCircleVertex.TexCoord = new Vector2(1);
+				topCircleVertex.TexCoord = new Vector2(1);
+
+				baseCircleVertices[i] = baseCircleVertex;
+				topCircleVertices[i] = topCircleVertex;
+			}
+
+			List<ObjMesh.ObjVertex> output = new List<ObjMesh.ObjVertex>();
+
+			//Base
+			for (int i = 0; i < segments; i++)
+			{
+				output.Add(baseVertex);
+				output.Add(baseCircleVertices[i]);
+				output.Add(baseCircleVertices[(i + 1) % segments]); //This should be 0 the last round
+			}
+			//Top
+			for (int i = 0; i < segments; i++)
+			{
+				output.Add(topCircleVertices[i]);
+				output.Add(topVertex);
+				output.Add(topCircleVertices[(i + 1) % segments]); //This should be 0 the last round
+			}
+			//Side
+			for (int i = 0; i < segments; i++)
+			{
+				output.Add(baseCircleVertices[i]);
+				output.Add(topCircleVertices[i]);
+				output.Add(topCircleVertices[(i + 1) % segments]);
+
+				output.Add(baseCircleVertices[(i + 1) % segments]);
+				output.Add(baseCircleVertices[i]);
+				output.Add(topCircleVertices[(i + 1) % segments]);
+			}
+
+			return output.ToArray();
+
+			//for (double y = 0; y < rings; y++)
+			//{
+			//	List<ObjMesh.ObjVertex> ring = new List<ObjMesh.ObjVertex>();
+			//	double phi = (y / (rings - 1)) * Math.PI; //was /2 
+			//	for (double x = 0; x < segments; x++)
+			//	{
+			//		double theta = (x / (segments - 1)) * 2 * Math.PI;
+
+			//		Vector3 v = new Vector3()
+			//		{
+			//			X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
+			//			Y = (float)(height * Math.Cos(phi)),
+			//			Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
+			//		};
+			//		Vector3 n = Vector3.Normalize(v);
+			//		Vector2 uv = new Vector2()
+			//		{
+			//			X = (float)(x / (segments - 1)),
+			//			Y = (float)(y / (rings - 1))
+			//		};
+			//		// Using data[i++] causes i to be incremented multiple times in Mono 2.2 (bug #479506).
+			//		ring.Add(new ObjMesh.ObjVertex() { Vertex = v, Normal = n, TexCoord = uv });
+			//	}
+			//	vertices.Add(ring);
+			//}
+
+			//List<ObjMesh.ObjVertex> data = new List<ObjMesh.ObjVertex>();
+			//for (int ringId = 1; ringId < vertices.Count; ringId++)
+			//{
+			//	for (int segId = 0; segId < vertices[ringId].Count - 1; segId++)
+			//	{
+			//		bool isTop = (ringId == 1);
+			//		bool isBottom = (ringId == vertices.Count - 1);
+
+			//		if (!isBottom)
+			//		{
+			//			data.Add(vertices[ringId][segId]);
+			//			data.Add(vertices[ringId - 1][segId]);
+			//			data.Add(vertices[ringId][segId + 1]);
+			//		}
+
+			//		if (!isTop)
+			//		{
+			//			data.Add(vertices[ringId - 1][segId]);
+			//			data.Add(vertices[ringId - 1][segId + 1]);
+			//			data.Add(vertices[ringId][segId + 1]);
+			//		}
+			//	}
+			//}
+
+			//return data.ToArray(); ;
+		}
+
+		#region Private
+
+		private static char[] splitCharacters = new char[] { ' ' };
+		private static char[] faceParamaterSplitter = new char[] { '/' };
+
+		private static List<Vector3> vertices;
+		private static List<Vector3> normals;
+		private static List<Vector2> texCoords;
+		private static Dictionary<ObjMesh.ObjVertex, int> objVerticesIndexDictionary;
+		private static List<ObjMesh.ObjVertex> objVertices;
+		private static List<ObjMesh.ObjTriangle> objTriangles;
+		private static List<ObjMesh.ObjQuad> objQuads;
 
 		private static void Load(ObjMesh mesh, TextReader textReader)
 		{
@@ -78,7 +213,7 @@ namespace SMART
 					case "v": // Vertex
 						float x = float.Parse(parameters[1], enUSCulture);
 						float y = float.Parse(parameters[2], enUSCulture);
-						float z = float.Parse(parameters[3], enUSCulture); 
+						float z = float.Parse(parameters[3], enUSCulture);
 						vertices.Add(new Vector3(x, y, z));
 						break;
 
@@ -132,7 +267,7 @@ namespace SMART
 			objQuads = null;
 		}
 
-        private static int ParseFaceParameter(string faceParameter)
+		private static int ParseFaceParameter(string faceParameter)
 		{
 			Vector3 vertex = new Vector3();
 			Vector2 texCoord = new Vector2();
@@ -164,7 +299,7 @@ namespace SMART
 			return FindOrAddObjVertex(ref vertex, ref texCoord, ref normal);
 		}
 
-        private static int FindOrAddObjVertex(ref Vector3 vertex, ref Vector2 texCoord, ref Vector3 normal)
+		private static int FindOrAddObjVertex(ref Vector3 vertex, ref Vector2 texCoord, ref Vector3 normal)
 		{
 			ObjMesh.ObjVertex newObjVertex = new ObjMesh.ObjVertex();
 			newObjVertex.Vertex = vertex;
@@ -184,64 +319,64 @@ namespace SMART
 			}
 		}
 
-        private static ObjMesh.ObjVertex[] CalculateSphereVertices(float radius, float height, byte segments, byte rings)
-        {
-            List<List<ObjMesh.ObjVertex>> vertices = new List<List<ObjMesh.ObjVertex>>();
+		private static ObjMesh.ObjVertex[] CalculateSphereVertices(float radius, float height, byte segments, byte rings)
+		{
+			List<List<ObjMesh.ObjVertex>> vertices = new List<List<ObjMesh.ObjVertex>>();
 
-            for (double y = 0; y < rings; y++)
-            {
-                List<ObjMesh.ObjVertex> ring = new List<ObjMesh.ObjVertex>();
-                double phi = (y / (rings - 1)) * Math.PI; //was /2 
-                for (double x = 0; x < segments; x++)
-                {
-                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+			for (double y = 0; y < rings; y++)
+			{
+				List<ObjMesh.ObjVertex> ring = new List<ObjMesh.ObjVertex>();
+				double phi = (y / (rings - 1)) * Math.PI; //was /2 
+				for (double x = 0; x < segments; x++)
+				{
+					double theta = (x / (segments - 1)) * 2 * Math.PI;
 
-                    Vector3 v = new Vector3()
-                    {
-                        X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
-                        Y = (float)(height * Math.Cos(phi)),
-                        Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
-                    };
-                    Vector3 n = Vector3.Normalize(v);
-                    Vector2 uv = new Vector2()
-                    {
-                        X = (float)(x / (segments - 1)),
-                        Y = (float)(y / (rings - 1))
-                    };
-                    // Using data[i++] causes i to be incremented multiple times in Mono 2.2 (bug #479506).
-                    ring.Add(new ObjMesh.ObjVertex() {  Vertex = v, Normal = n, TexCoord = uv });
-                }
-                vertices.Add(ring);
-            }
+					Vector3 v = new Vector3()
+					{
+						X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
+						Y = (float)(height * Math.Cos(phi)),
+						Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
+					};
+					Vector3 n = Vector3.Normalize(v);
+					Vector2 uv = new Vector2()
+					{
+						X = (float)(x / (segments - 1)),
+						Y = (float)(y / (rings - 1))
+					};
+					// Using data[i++] causes i to be incremented multiple times in Mono 2.2 (bug #479506).
+					ring.Add(new ObjMesh.ObjVertex() { Vertex = v, Normal = n, TexCoord = uv });
+				}
+				vertices.Add(ring);
+			}
 
-            List<ObjMesh.ObjVertex> data = new List<ObjMesh.ObjVertex>();
-            for (int ringId = 1; ringId < vertices.Count; ringId++)
-            {
-                for (int segId = 0; segId < vertices[ringId].Count - 1; segId++)
-                {
-                    bool isTop = (ringId == 1);
-                    bool isBottom = (ringId == vertices.Count - 1);
+			List<ObjMesh.ObjVertex> data = new List<ObjMesh.ObjVertex>();
+			for (int ringId = 1; ringId < vertices.Count; ringId++)
+			{
+				for (int segId = 0; segId < vertices[ringId].Count - 1; segId++)
+				{
+					bool isTop = (ringId == 1);
+					bool isBottom = (ringId == vertices.Count - 1);
 
-                    if (!isBottom)
-                    {
-                        data.Add(vertices[ringId][segId]);
-                        data.Add(vertices[ringId-1][segId]);
-                        data.Add(vertices[ringId][segId+1]);
-                    }
+					if (!isBottom)
+					{
+						data.Add(vertices[ringId][segId]);
+						data.Add(vertices[ringId - 1][segId]);
+						data.Add(vertices[ringId][segId + 1]);
+					}
 
-                    if (!isTop)
-                    {
-                        data.Add(vertices[ringId - 1][segId]);
-                        data.Add(vertices[ringId - 1][segId + 1]);
-                        data.Add(vertices[ringId][segId + 1]);
-                    }
-                }
-            }
+					if (!isTop)
+					{
+						data.Add(vertices[ringId - 1][segId]);
+						data.Add(vertices[ringId - 1][segId + 1]);
+						data.Add(vertices[ringId][segId + 1]);
+					}
+				}
+			}
 
-            return data.ToArray(); ;
-        }
+			return data.ToArray(); ;
+		}
 
-        #endregion
+		#endregion
 
-    }
+	}
 }
