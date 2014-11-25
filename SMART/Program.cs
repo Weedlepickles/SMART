@@ -14,8 +14,11 @@ namespace SMART
 		[STAThread]
 		static void Main(string[] args)
 		{
-			//Debug.WriteLine("Jag är bäst, du är en häst!");
+			//Run application
 			Window.Run(60, 60);
+
+            //Run AI test application
+            //System.Windows.Forms.Application.Run(new SMART.AI.AITest.AITestForm());
 		}
 	}
 }
