@@ -27,7 +27,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -41,6 +42,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,14 +50,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\AITest\AITestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AI\AITest\AITestForm.Designer.cs">
+      <DependentUpon>AITestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AI\AITest\AITestPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AI\Engine\QLearningControlPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AI\Engine\QLearningControlPanel.Designer.cs">
+      <DependentUpon>QLearningControlPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AI\Engine\QLearningEngine.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="Bone.cs" />
     <Compile Include="ForceMuscle.cs" />
+    <Compile Include="AI\ISkeletonAI.cs" />
     <Compile Include="Muscle.cs" />
     <Compile Include="ObjMesh.cs" />
     <Compile Include="ObjMeshLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AI\QLearningAI.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="Skeleton.cs" />
@@ -80,6 +100,22 @@
     <None Include="Shaders\Basic.vertex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AI\AITest\AITestForm.resx">
+      <DependentUpon>AITestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AI\Engine\QLearningControlPanel.resx">
+      <DependentUpon>QLearningControlPanel.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AI\AITest\cheese.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AI\AITest\mouse.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
