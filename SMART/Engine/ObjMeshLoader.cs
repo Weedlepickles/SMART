@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SMART
+namespace SMART.Engine
 {
 	public class ObjMeshLoader
 	{

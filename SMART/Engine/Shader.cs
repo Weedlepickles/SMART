@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SMART
+namespace SMART.Engine
 {
     /**
      * Source: http://deathbyalgorithm.blogspot.se/2013/12/basic-opentk-4-window.html
@@ -27,10 +27,10 @@ namespace SMART
         public int TexCoordLocation { get; set; }
         public int ColorLocation { get; set; }
 
-        public Shader(ref string vs, ref string fs)
+        public Shader(ref string vertexSource, ref string fragmentSource)
         {
-            VertexSource = vs;
-            FragmentSource = fs;
+            VertexSource = vertexSource;
+            FragmentSource = fragmentSource;
 
             Build();
         }
