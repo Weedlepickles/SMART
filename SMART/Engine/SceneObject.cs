@@ -73,7 +73,7 @@ namespace SMART.Engine
 				default:
 					foreach (SceneObject sceneObject in contains)
 					{
-						CallProcess(processType, data);
+						sceneObject.CallProcess(processType, data);
 					}
 					break;
 			}

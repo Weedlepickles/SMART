@@ -64,8 +64,8 @@ namespace SMART
 
 			Material standardMaterial = new Material("Basic.vertex", "Basic.fragment");
 
-			SceneObject sphere = new SceneObject("Sphere", new Transform(new Vector3(0, 0, -10), Vector3.Zero, new Vector3(3, 7.5f, 1)));
-			SceneObject cylinder = new SceneObject("Cylinder", new Transform(new Vector3(2, 2, -10), new Vector3(1, 0, 0), new Vector3(2, 1.5f, 1.7f)));
+			SceneObject sphere = new SceneObject("Sphere", new Transform(new Vector3(0, 0, -10), Vector3.Zero, new Vector3(1, 1, 1)));
+			SceneObject cylinder = new SceneObject("Cylinder", new Transform(new Vector3(2, 2, -10), new Vector3(1, 0, 0), new Vector3(1, 1, 1)));
 
 			Mesh sphereMesh = new Mesh(new ObjMesh(.30f, 16));
 			Mesh cylinderMesh = new Mesh(new ObjMesh(.30f, 1, 16));
@@ -79,8 +79,14 @@ namespace SMART
 			cylinder.Add(cylinderMesh);
 			cylinder.Add(meshRenderer2);
 
-			ActiveScene.SceneObjects.Add(sphere);
-			ActiveScene.SceneObjects.Add(cylinder);
+			//ActiveScene.Add(sphere);
+			//ActiveScene.Add(cylinder);
+
+
+			Transform skeletonTransform = new Transform(new Vector3(0, 2, -10), Vector3.Zero, new Vector3(1, 1, 1));
+			Skeleton skeleton = new Skeleton("Ben", skeletonTransform, standardMaterial, "ToePants.skeleton");
+
+			ActiveScene.Add(skeleton);
 
 			ActiveScene.Load();
 

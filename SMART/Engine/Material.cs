@@ -10,7 +10,7 @@ namespace SMART.Engine
 {
 	class Material
 	{
-		public Vector4 Color = new Vector4(1); //Opaque white as base-color
+		private Vector4 color = new Vector4(1); //Opaque white as base-color
 		public Shader Shader;
 
 		public Material(Shader shader)
@@ -24,6 +24,18 @@ namespace SMART.Engine
 			string fragment_source = System.IO.File.ReadAllText("Shaders/" + fragmentShaderFileName);
 
 			Shader = new Shader(ref vertex_source, ref fragment_source);
+		}
+
+		public Vector4 Color
+		{
+			get
+			{
+				return color;
+			}
+			set
+			{
+				color = value;
+			}
 		}
 	}
 }

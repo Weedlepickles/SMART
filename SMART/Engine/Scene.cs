@@ -9,11 +9,16 @@ namespace SMART.Engine
 {
 	class Scene
 	{
-		public List<SceneObject> SceneObjects = new List<SceneObject>();
-
 		public Scene()
 		{
-			//What to do, what to do?
+			sceneObjects = new List<SceneObject>();
+		}
+
+		private List<SceneObject> sceneObjects;
+
+		public void Add(SceneObject sceneObject)
+		{
+			sceneObjects.Add(sceneObject);
 		}
 
 		public void Load()
@@ -29,7 +34,7 @@ namespace SMART.Engine
 		public void Render()
 		{
 			//Go through all SceneObjects' with a MeshRenderer Component
-			foreach (SceneObject sceneObject in SceneObjects)
+			foreach (SceneObject sceneObject in sceneObjects)
 			{
 				sceneObject.CallProcess(ProcessType.Render, null);
 			}
