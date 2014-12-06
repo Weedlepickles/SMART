@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace SMART.Engine
 {
-	public enum ProcessType { Render, UpdateState };
+	public enum ProcessType { Render, Update };
 }

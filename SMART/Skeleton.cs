@@ -9,20 +9,54 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SMART.Engine;
+using Jitter;
 
 namespace SMART
 {
-	class Skeleton : SceneObject
+	class Skeleton
 	{
-		private Material skeletonMaterial;
+		private Vector3 position;
 
-		List<Muscle> Muscles = new List<Muscle>();
+		private List<Bone> bones = new List<Bone>();
+		private List<Muscle> muscles = new List<Muscle>();
 
-		public Skeleton(string name, Transform transform, Material material, string fileName)
-			: base(name, transform)
+		private World world;
+
+		public Skeleton(string name, Vector3 position, World world, string fileName)
 		{
-			skeletonMaterial = material;
+			this.position = position;
+			this.world = world;
 			LoadSkeleton(fileName);
+			AttachToWorld();
+		}
+
+		public void Render()
+		{
+			foreach (Bone bone in bones)
+			{
+				bone.Render();
+			}
+		}
+
+		public Vector3 Position
+		{
+			get
+			{
+				return position;
+			}
+			private set
+			{
+				position = value;
+			}
+		}
+
+		private void AttachToWorld()
+		{
+			//Add all the bones' RigidBody to the world
+			foreach (Bone bone in bones)
+			{
+				world.AddBody(bone.RigidBody);
+			}
 		}
 
 		enum SkeletonParserState { StartState, CreationState, LinkState, FreedomState };
@@ -68,13 +102,14 @@ namespace SMART
 							float x = float.Parse(segments[2], culture);
 							float y = float.Parse(segments[3], culture);
 							float z = float.Parse(segments[4], culture);
-							Bone bone = new Bone(boneName, new Transform(new Vector3(x, y, z), Vector3.Zero, Vector3.One), skeletonMaterial);
+							Bone bone = new Bone(boneName, new Vector3(x + position.X, y + position.Y, z + position.Z), this);
 
 							allBones.Add(boneName, bone);
 
+							bones.Add(bone);
+
 							if (boneName.Equals("Root"))
 							{
-								this.Add(bone);
 								rootBoneCounter++;
 							}
 
@@ -105,12 +140,14 @@ namespace SMART
 						string[] segments = line.Split(separators);
 						if (segments[0].Equals("Bone") && segments[2].Equals("Children"))
 						{
-							string boneName = segments[1];
-							for (int i = 3; i < segments.Length; i++)
-							{
-								//Set 
-								allBones[boneName].Add(allBones[segments[i]]);
-							}
+							//Need to connect the bones somehow
+
+							//string boneName = segments[1];
+							//for (int i = 3; i < segments.Length; i++)
+							//{
+							//	//Set 
+							//	allBones[boneName].Add(allBones[segments[i]]);
+							//}
 						}
 						else if (segments[0].Equals("FreedomState"))
 						{

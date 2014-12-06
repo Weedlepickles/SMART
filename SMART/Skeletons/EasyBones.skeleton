@@ -1,0 +1,22 @@
+﻿CreationState
+Bone Root 0 0 0
+Bone 1 -3.5 -3 0
+Bone 2 -3 -7 0
+Bone 3 -3 -11 0
+
+LinkState
+Bone Root Children 1
+Bone 1 Children 2
+Bone 2 Children 3
+
+ FreedomState
+ Node 2 Normal z Freedom 30 30
+ Node 2 Normal rotation Freedom 10 10
+ Node 3 Normal z Freedom 30 30
+ Node 3 Normal rotation Freedom 10 10
+ Node 6 Normal x Freedom 135 5
+ Node 7 Normal x Freedom 135 5
+ Node 8 Normal x Freedom 45 45
+ Node 9 Normal x Freedom 45 45
+ Node 10 Normal x Freedom 45 45
+ Node 11 Normal x Freedom 45 45

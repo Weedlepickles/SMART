@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SMART.Engine
 {
-	enum ComponentType { Mesh, MeshRenderer };
+	enum ComponentType { Mesh, MeshRenderer, RigidBody };
 
 	abstract class Component
 	{
