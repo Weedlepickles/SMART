@@ -16,7 +16,7 @@ namespace SMART.AI
         private QLearningEngine mQEngine;
         private Scene mEnvironment;
         private Skeleton mSkeleton;
-        private List<Muscle> mMuscles;
+        private List<LinearMuscle> mMuscles;
 
         #endregion
 
@@ -24,12 +24,12 @@ namespace SMART.AI
 
         #endregion
 
-        public QLearningAI(Scene environment, Skeleton myBody, List<Muscle> myMuscles)
+        public QLearningAI(Scene environment, Skeleton myBody, List<LinearMuscle> myMuscles)
         {
             Initialize(environment, myBody, myMuscles);
         }
 
-        public void Initialize(Scene environment, Skeleton myBody, List<Muscle> myMuscles)
+        public void Initialize(Scene environment, Skeleton myBody, List<LinearMuscle> myMuscles)
         {
             mEnvironment = environment;
             mSkeleton = myBody;

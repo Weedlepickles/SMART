@@ -8,6 +8,9 @@ using OpenTK;
 using Jitter.LinearMath;
 using Jitter.Dynamics;
 using Jitter.Collision.Shapes;
+using System.Diagnostics;
+using Jitter.Dynamics.Constraints;
+using Jitter.Collision;
 
 namespace SMART
 {
@@ -20,28 +23,92 @@ namespace SMART
 
 		public Scene()
 		{
-			//We run a CollisionSystem that is fast for up to 30 objects. O(n^2).
-			world = new Jitter.World(new Jitter.Collision.CollisionSystemBrute());
-			world.Gravity = new JVector(0, -0.0002f, 0);
+			CollisionSystemPersistentSAP system = new CollisionSystemPersistentSAP();
+			
+
+			world = new Jitter.World(system);
+			world.Gravity = new JVector(0, 0, 0);
 
 			//float[,] heights = new float[1,1];
 			Shape box = new BoxShape(100, 1, 100);
 			RigidBody ground = new RigidBody(box);
 			ground.IsStatic = true;
-			ground.Position = new JVector(-50, -1, -50);
+			ground.Position = new JVector(0, -1, 0);
 
 			//Let there be ground, to separate the void from the bones!
-			world.AddBody(ground);
+			//world.AddBody(ground);
+
+			world.SetDampingFactors(0.001f, 0.001f);
+			world.SetInactivityThreshold(0, 0, float.MaxValue);
 		}
 
 		public void Load()
 		{
-			skeleton = new Skeleton("Ben", new Vector3(0, 12, -20), world, "EasyBones.skeleton");
+			skeleton = new Skeleton("Ben", new Vector3(0, 12.5f, -20), world, "EasyBones.skeleton");
+
+			foreach(LinearMuscle muscle in skeleton.Muscles)
+			{
+				muscle.Strength = 1;
+			}
 			//Load this Scene, maybe nothing needs to be done here?
 		}
 
 		public void Update(TimeSpan deltaTime)
 		{
+			if (skeleton != null && skeleton.Bones != null)
+			{
+
+				foreach (Connection connection in skeleton.Connections)
+				{
+					connection.ForceConnection();
+				}
+
+				foreach(LinearMuscle muscle in skeleton.Muscles)
+				{
+					muscle.UseMuscle();
+				}
+
+				Random random = new Random();
+				foreach (Bone bone in skeleton.Bones)
+				{
+					bone.RigidBody.IsActive = true;
+					bone.RigidBody.IsStatic = false;
+					
+					/*
+					float temp1 = 1;
+					float temp2 = 1;
+					float temp3 = 1;
+					if (random.NextDouble() > 0.5d)
+						temp1 *= -1;
+					if (random.NextDouble() > 0.5d)
+						temp2 *= -1;
+					if (random.NextDouble() > 0.5d)
+						temp3 *= -1;
+
+					JVector gravity = new JVector(0.001f * temp1 * (float)random.NextDouble(), 0.001f * temp2 * (float)random.NextDouble(), 0.001f * temp3 * (float)random.NextDouble());
+
+					 */
+					JVector gravity = new JVector(0, -0.00982f, 0);
+
+					bone.RigidBody.AddForce(gravity);
+
+
+
+					if (bone.RigidBody.Position.Y <= 0)
+					{
+						bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X * 0.5f, 0, bone.RigidBody.Force.Z * 0.5f);
+						if (bone.RigidBody.LinearVelocity.Y < 0)
+							bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
+					}
+					else if (bone.RigidBody.Position.Y <= 0.25f)
+					{
+						bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X * 0.5f, bone.RigidBody.Force.Y * 0.5f, bone.RigidBody.Force.Z * 0.5f);
+						if (bone.RigidBody.LinearVelocity.Y < 0)
+							bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
+					}
+				}
+			}
+
 			world.Step((float)deltaTime.TotalMilliseconds, false); //Runs without multithreading
 		}
 

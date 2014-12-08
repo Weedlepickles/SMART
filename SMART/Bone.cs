@@ -26,10 +26,15 @@ namespace SMART
 			renderer = new Renderer();
 			rigidBody = new RigidBody(new Jitter.Collision.Shapes.SphereShape(1));
 			rigidBody.Position = new JVector(position.X, position.Y, position.Z);
+			rigidBody.Material.StaticFriction = 0;
+			rigidBody.Material.KineticFriction = 0;
+			
 
 			//TEST REMOVE!!!
 			//rigidBody.LinearVelocity = new JVector(0.1f, 0.01f, 0.01f);
-			//rigidBody.AddForce(new JVector(0.001f, 0.00001f, 0.00001f));
+			//rigidBody.Force = new JVector(0, -0.00002f, 0);
+			//rigidBody.ApplyImpulse( new JVector(0, 4.2f, 0));
+			//rigidBody.Damping = Jitter.Dynamics.RigidBody.DampingType.None;
 		}
 
 		public void Render()
@@ -37,6 +42,18 @@ namespace SMART
 			Vector3 position = new Vector3(rigidBody.Position.X, rigidBody.Position.Y, rigidBody.Position.Z);
 			Matrix4 transformation = Matrix4.CreateTranslation(position) * Matrix4.CreateTranslation(owner.Position);
 			renderer.Render(transformation);
+		}
+
+		public string Name
+		{
+			get
+			{
+				return name;
+			}
+			private set
+			{
+				name = value;
+			}
 		}
 
 		public RigidBody RigidBody

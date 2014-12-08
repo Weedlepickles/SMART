@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SMART.Engine;
 using Jitter;
+using Jitter.Dynamics.Constraints;
+using Jitter.LinearMath;
 
 namespace SMART
 {
@@ -18,7 +20,8 @@ namespace SMART
 		private Vector3 position;
 
 		private List<Bone> bones = new List<Bone>();
-		private List<Muscle> muscles = new List<Muscle>();
+		private List<Connection> connections = new List<Connection>();
+		private List<LinearMuscle> muscles = new List<LinearMuscle>();
 
 		private World world;
 
@@ -30,6 +33,39 @@ namespace SMART
 			AttachToWorld();
 		}
 
+		public List<Bone> Bones
+		{
+			get
+			{
+				return bones;
+			}
+			private set
+			{
+				bones = value;
+			}
+		}
+		public List<Connection> Connections
+		{
+			get
+			{
+				return connections;
+			}
+			private set
+			{
+				connections = value;
+			}
+		}
+		public List<LinearMuscle> Muscles
+		{
+			get
+			{
+				return muscles;
+			}
+			private set
+			{
+				muscles = value;
+			}
+		}
 		public void Render()
 		{
 			foreach (Bone bone in bones)
@@ -37,7 +73,6 @@ namespace SMART
 				bone.Render();
 			}
 		}
-
 		public Vector3 Position
 		{
 			get
@@ -59,7 +94,7 @@ namespace SMART
 			}
 		}
 
-		enum SkeletonParserState { StartState, CreationState, LinkState, FreedomState };
+		enum SkeletonParserState { StartState, CreationState, LinkState, MuscleState };
 		private void LoadSkeleton(string fileName)
 		{
 			SkeletonParserState state = SkeletonParserState.StartState;
@@ -105,7 +140,6 @@ namespace SMART
 							Bone bone = new Bone(boneName, new Vector3(x + position.X, y + position.Y, z + position.Z), this);
 
 							allBones.Add(boneName, bone);
-
 							bones.Add(bone);
 
 							if (boneName.Equals("Root"))
@@ -132,7 +166,7 @@ namespace SMART
 						}
 						else
 						{
-							throw new Exception("Error on line " + lineNumber + ". The words Node or LinkState expected.");
+							throw new Exception("Error on line " + lineNumber + ". The words Bone or LinkState expected.");
 						}
 					}
 					else if (state == SkeletonParserState.LinkState)
@@ -140,27 +174,39 @@ namespace SMART
 						string[] segments = line.Split(separators);
 						if (segments[0].Equals("Bone") && segments[2].Equals("Children"))
 						{
-							//Need to connect the bones somehow
+							string boneName = segments[1];
+							Bone parentBone = allBones[boneName];
 
-							//string boneName = segments[1];
-							//for (int i = 3; i < segments.Length; i++)
-							//{
-							//	//Set 
-							//	allBones[boneName].Add(allBones[segments[i]]);
-							//}
+							for (int i = 3; i < segments.Length; i++)
+							{
+								Bone childBone = allBones[segments[i]];
+
+								Connection connection = new Connection(parentBone, childBone, 0.1f);
+
+								connections.Add(connection);
+							}
+
 						}
-						else if (segments[0].Equals("FreedomState"))
+						else if (segments[0].Equals("Muscles"))
 						{
-							state = SkeletonParserState.FreedomState;
+							state = SkeletonParserState.MuscleState;
 						}
 						else
 						{
-							throw new Exception("Error on line " + lineNumber + ". The words Node or Children or FreedomState expected.");
+							throw new Exception("Error on line " + lineNumber + ". The words Bone or Children or Muscle expected.");
 						}
 					}
-					else if (state == SkeletonParserState.FreedomState)
+					else if (state == SkeletonParserState.MuscleState)
 					{
-						//Not implemented (yet)
+						string[] segments = line.Split(separators);
+						if (segments[0].Equals("Bone"))
+						{
+							Bone bone1 = allBones[segments[1]];
+							Bone bone2 = allBones[segments[2]];
+							float maxForce = float.Parse(segments[3], culture);
+							LinearMuscle muscle = new LinearMuscle(bone1, bone2, maxForce);
+							muscles.Add(muscle);
+						}
 					}
 				}
 			}

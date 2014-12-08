@@ -68,6 +68,7 @@
     <Compile Include="AI\Engine\QLearningEngine.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="Bone.cs" />
+    <Compile Include="Connection.cs" />
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\Enumerators.cs" />
     <Compile Include="Engine\Material.cs" />
@@ -75,10 +76,9 @@
     <Compile Include="Engine\MeshRenderer.cs" />
     <Compile Include="Engine\RigidBody.cs" />
     <Compile Include="Engine\Transform.cs" />
-    <Compile Include="ForceMuscle.cs" />
     <Compile Include="AI\ISkeletonAI.cs" />
     <Compile Include="Model.cs" />
-    <Compile Include="Muscle.cs" />
+    <Compile Include="LinearMuscle.cs" />
     <Compile Include="Engine\ObjMesh.cs" />
     <Compile Include="Engine\ObjMeshLoader.cs" />
     <Compile Include="Program.cs" />
@@ -108,6 +108,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Shaders\Basic.vertex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\Bug.skeleton">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Skeletons\EasyBones.skeleton">

@@ -81,6 +81,8 @@ namespace SMART
 			TimeSpan deltaTime = now - lastUpdate;
 			lastUpdate = now;
 
+			deltaTime = new TimeSpan(0, 0, 0, 0, 5);
+
 			UpdateState(deltaTime);
 		}
 
