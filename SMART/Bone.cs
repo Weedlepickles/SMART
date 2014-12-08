@@ -28,7 +28,8 @@ namespace SMART
 			rigidBody.Position = new JVector(position.X, position.Y, position.Z);
 			rigidBody.Material.StaticFriction = 0;
 			rigidBody.Material.KineticFriction = 0;
-			
+			rigidBody.IsParticle = true;
+			rigidBody.Mass = 1;
 
 			//TEST REMOVE!!!
 			//rigidBody.LinearVelocity = new JVector(0.1f, 0.01f, 0.01f);

@@ -181,7 +181,7 @@ namespace SMART
 							{
 								Bone childBone = allBones[segments[i]];
 
-								Connection connection = new Connection(parentBone, childBone, 0.1f);
+								Connection connection = new Connection(parentBone, childBone);
 
 								connections.Add(connection);
 							}

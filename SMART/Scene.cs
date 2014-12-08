@@ -24,7 +24,7 @@ namespace SMART
 		public Scene()
 		{
 			CollisionSystemPersistentSAP system = new CollisionSystemPersistentSAP();
-			
+
 
 			world = new Jitter.World(system);
 			world.Gravity = new JVector(0, 0, 0);
@@ -38,17 +38,17 @@ namespace SMART
 			//Let there be ground, to separate the void from the bones!
 			//world.AddBody(ground);
 
-			world.SetDampingFactors(0.001f, 0.001f);
+			world.SetDampingFactors(0.1f, 0.1f);
 			world.SetInactivityThreshold(0, 0, float.MaxValue);
 		}
 
 		public void Load()
 		{
-			skeleton = new Skeleton("Ben", new Vector3(0, 12.5f, -20), world, "EasyBones.skeleton");
+			skeleton = new Skeleton("Ben", new Vector3(0, 7, -20), world, "Bug.skeleton");
 
-			foreach(LinearMuscle muscle in skeleton.Muscles)
+			foreach (LinearMuscle muscle in skeleton.Muscles)
 			{
-				muscle.Strength = 1;
+				muscle.Strength = 0;
 			}
 			//Load this Scene, maybe nothing needs to be done here?
 		}
@@ -63,9 +63,9 @@ namespace SMART
 					connection.ForceConnection();
 				}
 
-				foreach(LinearMuscle muscle in skeleton.Muscles)
+				foreach (LinearMuscle muscle in skeleton.Muscles)
 				{
-					muscle.UseMuscle();
+					//muscle.UseMuscle();
 				}
 
 				Random random = new Random();
@@ -73,7 +73,7 @@ namespace SMART
 				{
 					bone.RigidBody.IsActive = true;
 					bone.RigidBody.IsStatic = false;
-					
+
 					/*
 					float temp1 = 1;
 					float temp2 = 1;
@@ -88,21 +88,31 @@ namespace SMART
 					JVector gravity = new JVector(0.001f * temp1 * (float)random.NextDouble(), 0.001f * temp2 * (float)random.NextDouble(), 0.001f * temp3 * (float)random.NextDouble());
 
 					 */
-					JVector gravity = new JVector(0, -0.00982f, 0);
+					JVector gravity = new JVector(0, -0.000982f, 0);
 
-					bone.RigidBody.AddForce(gravity);
+					if (bone.RigidBody.Position.Y > 0.0001f)
+					{
+						bone.RigidBody.AddForce(gravity);
+					}
+					else
+					{
+						bone.RigidBody.AddForce(-0.005f * gravity);
+					}
 
+					//else if (bone.RigidBody.Position.Y <= 0.25f)
+					//{
+					//	bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X * 0.5f, bone.RigidBody.Force.Y * 0.5f, bone.RigidBody.Force.Z * 0.5f);
+					//	if (bone.RigidBody.LinearVelocity.Y < 0)
+					//		bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
+					//}
+				}
 
-
+				foreach (Bone bone in skeleton.Bones)
+				{
 					if (bone.RigidBody.Position.Y <= 0)
 					{
-						bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X * 0.5f, 0, bone.RigidBody.Force.Z * 0.5f);
-						if (bone.RigidBody.LinearVelocity.Y < 0)
-							bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
-					}
-					else if (bone.RigidBody.Position.Y <= 0.25f)
-					{
-						bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X * 0.5f, bone.RigidBody.Force.Y * 0.5f, bone.RigidBody.Force.Z * 0.5f);
+						bone.RigidBody.Position = new JVector(bone.RigidBody.Position.X, 0, bone.RigidBody.Position.Z);
+						bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X, 0, bone.RigidBody.Force.Z);
 						if (bone.RigidBody.LinearVelocity.Y < 0)
 							bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
 					}

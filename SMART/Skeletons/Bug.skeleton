@@ -1,19 +1,25 @@
 ﻿CreationState
 Bone Root 0 0 0
-Bone H1 -3 -4 0
-Bone H2 -3 -8 0.3
-Bone H3 -3 -12 0
-Bone L1 3 -4 0
-Bone L2 3 -8 0.3
-Bone L3 3 -12 0
+Bone T1 0 -2 -2
+Bone T2 -2 -2 2
+Bone T3 2 -2 2
+Bone A 0 -6 -4
+Bone B -4 -6 4
+Bone C 4 -6 4
 
 LinkState
-Bone Root Children H1 L1
-Bone H1 Children L1 H2
-Bone H2 Children H3
-Bone L1 Children L2
-Bone L2 Children L3
+Bone Root Children T1 T2 T3
+Bone T1 Children A T2 T3
+Bone T2 Children B T1 T3
+Bone T3 Children C T1 T2
+Bone A Children T2 T3
+Bone B Children T1 T3
+Bone C Children T1 T2
 
 Muscles
-Bone H1 H3 0.1
-Bone L1 L3 0.1
+Bone A T2 0.05
+Bone A T3 0.05
+Bone B T1 0.05
+Bone B T3 0.05
+Bone C T1 0.05
+Bone C T2 0.05

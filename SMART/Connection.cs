@@ -10,18 +10,17 @@ namespace SMART
 	class Connection
 	{
 		private Bone parent, child;
-		private float impulseFactor = 0.01f;
+		private float forceFactor = 0.05f;
 		private JVector connectionVector;
 		private float length;
-		private float stabilizer = 1;
 
-		public Connection(Bone parent, Bone child, float impulseFactor)
+		public Connection(Bone parent, Bone child)
 		{
 			this.parent = parent;
 			this.child = child;
 			connectionVector = child.RigidBody.Position - parent.RigidBody.Position;
 			length = connectionVector.Length();
-			this.impulseFactor = impulseFactor;
+
 		}
 
 		public void ForceConnection()
@@ -31,17 +30,12 @@ namespace SMART
 			float lengthDifference = length - currentLength;
 			connection.Normalize();
 			JVector force;
-			if (lengthDifference> 0)
-			{
-				force= connection * impulseFactor * lengthDifference * lengthDifference;
-			}
-			else
-			{
-				force = connection * impulseFactor * -lengthDifference * lengthDifference;
-			}
-			child.RigidBody.AddForce(force);
+
+			force = connection * forceFactor * lengthDifference;
+
+			child.RigidBody.ApplyImpulse(force);
 			force.Negate();
-			parent.RigidBody.AddForce(force);
+			parent.RigidBody.ApplyImpulse(force);
 		}
 	}
 }
