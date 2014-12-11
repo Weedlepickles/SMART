@@ -50,22 +50,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AI\AITest\AITestForm.cs">
+    <Compile Include="AI\AITest\NNTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AI\AITest\AITestForm.Designer.cs">
-      <DependentUpon>AITestForm.cs</DependentUpon>
+    <Compile Include="AI\AITest\NNTestForm.Designer.cs">
+      <DependentUpon>NNTestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AI\AITest\QLearningTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AI\AITest\QLearningTestForm.Designer.cs">
+      <DependentUpon>QLearningTestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="AI\AITest\AITestPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="AI\Engine\QLearningControlPanel.cs">
+    <Compile Include="AI\NeuralNetwork\NNEngine.cs" />
+    <Compile Include="AI\QEngine\QLearningControlPanel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AI\Engine\QLearningControlPanel.Designer.cs">
+    <Compile Include="AI\QEngine\QLearningControlPanel.Designer.cs">
       <DependentUpon>QLearningControlPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="AI\Engine\QLearningEngine.cs" />
+    <Compile Include="AI\QEngine\QLearningEngine.cs" />
+    <Compile Include="AI\WNNQEngine\WNNQEngine.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="Bone.cs" />
     <Compile Include="Engine\Component.cs" />
@@ -113,10 +121,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AI\AITest\AITestForm.resx">
-      <DependentUpon>AITestForm.cs</DependentUpon>
+    <EmbeddedResource Include="AI\AITest\NNTestForm.resx">
+      <DependentUpon>NNTestForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AI\Engine\QLearningControlPanel.resx">
+    <EmbeddedResource Include="AI\AITest\QLearningTestForm.resx">
+      <DependentUpon>QLearningTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AI\QEngine\QLearningControlPanel.resx">
       <DependentUpon>QLearningControlPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
@@ -129,7 +140,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AI\Engine\Saved QStates\" />
+    <Folder Include="AI\QEngine\Saved QStates\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

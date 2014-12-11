@@ -1,6 +1,6 @@
 ﻿namespace SMART.AI.AITest
 {
-    partial class AITestForm
+    partial class QLearningTestForm
     {
         /// <summary>
         /// Required designer variable.
