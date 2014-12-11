@@ -76,24 +76,26 @@
     <Compile Include="AI\WNNQEngine\WNNQEngine.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="Bone.cs" />
+    <Compile Include="Connection.cs" />
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\Enumerators.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\Mesh.cs" />
     <Compile Include="Engine\MeshRenderer.cs" />
+    <Compile Include="Engine\RigidBody.cs" />
     <Compile Include="Engine\Transform.cs" />
-    <Compile Include="ForceMuscle.cs" />
     <Compile Include="AI\ISkeletonAI.cs" />
     <Compile Include="Model.cs" />
-    <Compile Include="Muscle.cs" />
+    <Compile Include="LinearMuscle.cs" />
     <Compile Include="Engine\ObjMesh.cs" />
     <Compile Include="Engine\ObjMeshLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AI\QLearningAI.cs" />
-    <Compile Include="Engine\Scene.cs" />
+    <Compile Include="Scene.cs" />
     <Compile Include="Engine\SceneObject.cs" />
-    <Compile Include="Engine\Shader.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="Renderer.cs" />
     <Compile Include="Skeleton.cs" />
     <Compile Include="VectorUtilities.cs" />
     <Compile Include="Engine\VertexFloatBuffer.cs" />
@@ -114,6 +116,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Shaders\Basic.vertex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\Bug.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\EasyBones.skeleton">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Skeletons\ToePants.skeleton">

@@ -67,7 +67,7 @@ namespace SMART.Engine
 				case ProcessType.Render:
 					Render();
 					goto default;
-				case ProcessType.UpdateState:
+				case ProcessType.Update:
 					//To be implemented
 					goto default;
 				default:
@@ -88,6 +88,11 @@ namespace SMART.Engine
 					((MeshRenderer)component).Render();
 				}
 			}
+		}
+
+		private void Update()
+		{
+
 		}
 	}
 }

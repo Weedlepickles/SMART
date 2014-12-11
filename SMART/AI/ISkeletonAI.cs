@@ -15,7 +15,7 @@ namespace SMART.AI
         /// <param name="environment">The AI must know about the environment to evaluate its performance.</param>
         /// <param name="myBody">The AI must know about its own body to evaluate its performance.</param>
         /// <param name="myMuscles">These are the muscles that the AI will act upon.</param>
-        void Initialize(Scene environment, Skeleton myBody, List<Muscle> myMuscles);
+        void Initialize(Scene environment, Skeleton myBody, List<LinearMuscle> myMuscles);
 
         /// <summary>
         /// This method causes the AI to calculate new actions for its muscles.
