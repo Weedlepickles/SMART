@@ -126,10 +126,8 @@ namespace SMART
 				{
 					if (angleAroundY < degree90)
 						rotation = Matrix4.CreateRotationY(degree90 - angleAroundY);
-					else if (angleAroundY < 2 * degree90)
-						rotation = Matrix4.CreateRotationY(-angleAroundY);
 					else
-						rotation = Matrix4.CreateRotationY(degree90 + angleAroundY);
+						rotation = Matrix4.CreateRotationY(-angleAroundY);
 				}
 			}
 			if (rotationVector != Vector3.Zero)

@@ -1,0 +1,14 @@
+﻿CreationState
+Bone Root 0 0 0
+Bone U3 5 15 5
+Bone U2 5 6 5
+Bone U1 5 3 5
+Bone M 5 0 5
+Bone D1 5 -3 5
+Bone D2 5 -6 5
+
+LinkState
+Bone Root Children U3 U2 U1 M D1 D2
+
+Muscles
+Bone U3 U2 100 0.8
