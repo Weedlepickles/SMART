@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace SMART.AI.AITest
 {
-	public partial class AITestForm : Form
+	public partial class QLearningTestForm : Form
 	{
 		private const float kAccSpeed = 0.5f;
 		private const float kMaxSpeed = 4f;
@@ -25,7 +25,7 @@ namespace SMART.AI.AITest
 		QLearningControlPanel ControlPanelY;
 		private Random Rnd = new Random();
 
-		public AITestForm()
+		public QLearningTestForm()
 		{
 			InitializeComponent();
 			tickTimer.Tick += tickTimer_Tick;

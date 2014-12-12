@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 namespace SMART.AI.Engine
 {
     
+    /// <summary>
+    /// A standard QLearning Engine
+    /// 
+    /// Author:
+    /// Emil Olofsson
+    /// emiol791@student.liu.se
+    /// </summary>
     class QLearningEngine
     {
 
