@@ -66,11 +66,15 @@ namespace SMART
 				muscles = value;
 			}
 		}
-		public void Render()
+		public void Render(Camera camera)
 		{
+			foreach (Connection connection in connections)
+			{
+				connection.Render(camera);
+			}
 			foreach (Bone bone in bones)
 			{
-				bone.Render();
+				bone.Render(camera);
 			}
 		}
 		public Vector3 Position
@@ -181,7 +185,7 @@ namespace SMART
 							{
 								Bone childBone = allBones[segments[i]];
 
-								Connection connection = new Connection(parentBone, childBone);
+								Connection connection = new Connection(this, parentBone, childBone);
 
 								connections.Add(connection);
 							}
@@ -204,7 +208,8 @@ namespace SMART
 							Bone bone1 = allBones[segments[1]];
 							Bone bone2 = allBones[segments[2]];
 							float maxForce = float.Parse(segments[3], culture);
-							LinearMuscle muscle = new LinearMuscle(bone1, bone2, maxForce);
+							LinearMuscle muscle = new LinearMuscle(this, bone1, bone2, maxForce);
+							connections.Add(muscle.Connection);
 							muscles.Add(muscle);
 						}
 					}

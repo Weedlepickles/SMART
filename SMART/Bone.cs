@@ -18,31 +18,25 @@ namespace SMART
 		private Skeleton owner;
 		private Renderer renderer;
 		private RigidBody rigidBody;
+		private bool frozen = false;
 
 		public Bone(string name, Vector3 position, Skeleton owner)
 		{
 			this.name = name;
 			this.owner = owner;
-			renderer = new Renderer();
+			renderer = new Renderer(new Vector4(0, 1, 0, 1));
 			rigidBody = new RigidBody(new Jitter.Collision.Shapes.SphereShape(1));
 			rigidBody.Position = new JVector(position.X, position.Y, position.Z);
 			rigidBody.Material.StaticFriction = 0;
 			rigidBody.Material.KineticFriction = 0;
-			rigidBody.IsParticle = true;
 			rigidBody.Mass = 1;
-
-			//TEST REMOVE!!!
-			//rigidBody.LinearVelocity = new JVector(0.1f, 0.01f, 0.01f);
-			//rigidBody.Force = new JVector(0, -0.00002f, 0);
-			//rigidBody.ApplyImpulse( new JVector(0, 4.2f, 0));
-			//rigidBody.Damping = Jitter.Dynamics.RigidBody.DampingType.None;
 		}
 
-		public void Render()
+		public void Render(Camera camera)
 		{
 			Vector3 position = new Vector3(rigidBody.Position.X, rigidBody.Position.Y, rigidBody.Position.Z);
 			Matrix4 transformation = Matrix4.CreateTranslation(position) * Matrix4.CreateTranslation(owner.Position);
-			renderer.Render(transformation);
+			renderer.Render(camera, transformation);
 		}
 
 		public string Name
@@ -54,6 +48,17 @@ namespace SMART
 			private set
 			{
 				name = value;
+			}
+		}
+		public bool isFrozen
+		{
+			get
+			{
+				return frozen;
+			}
+			set
+			{
+				frozen = value;
 			}
 		}
 

@@ -1,0 +1,10 @@
+﻿CreationState
+Bone Root 0 0 0
+Bone X 5 0 0
+Bone Y 0 5 0
+Bone Z 0 0 5
+
+LinkState
+Bone Root Children X Y Z
+
+Muscles

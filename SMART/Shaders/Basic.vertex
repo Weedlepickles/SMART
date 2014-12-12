@@ -3,18 +3,15 @@ layout (location = 0) in vec3 vertex_position;
 layout (location = 1) in vec3 vertex_normal;
 layout (location = 2) in vec2 vertex_texcoord;
 
-//uniform mat4 mvp_matrix;
-uniform mat4 m_matrix;
-uniform mat4 v_matrix;
-uniform mat4 p_matrix;
+uniform mat4 view_matrix;
+uniform mat4 model_matrix;
 uniform vec3 in_color;
 
 out vec3 color;
 
 void main(void)
 {
-    mat4 mv_matrix = m_matrix * v_matrix;
-	float shade = (mat3(mv_matrix)*vertex_normal).z;
+	float shade = (mat3(model_matrix) * vertex_normal).z;
 	color = vec3(shade * in_color.r, shade * in_color.g, shade * in_color.b);
-    gl_Position = p_matrix * mv_matrix * vec4(vertex_position, 1.0);
+	gl_Position = view_matrix * model_matrix * vec4(vertex_position, 1.0);
 }

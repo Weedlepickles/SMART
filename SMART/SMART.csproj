@@ -68,6 +68,7 @@
     <Compile Include="AI\Engine\QLearningEngine.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="Bone.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\Enumerators.cs" />
@@ -79,8 +80,8 @@
     <Compile Include="AI\ISkeletonAI.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="LinearMuscle.cs" />
-    <Compile Include="Engine\ObjMesh.cs" />
-    <Compile Include="Engine\ObjMeshLoader.cs" />
+    <Compile Include="ObjMesh.cs" />
+    <Compile Include="ObjMeshLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AI\QLearningAI.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="Renderer.cs" />
     <Compile Include="Skeleton.cs" />
     <Compile Include="VectorUtilities.cs" />
-    <Compile Include="Engine\VertexFloatBuffer.cs" />
+    <Compile Include="VertexFloatBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -108,6 +109,30 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Shaders\Basic.vertex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest8.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest7.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest6.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest5.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest4.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest3.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest2.skeleton">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Skeletons\DrawTest1.skeleton">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Skeletons\Bug.skeleton">

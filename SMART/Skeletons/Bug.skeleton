@@ -3,23 +3,20 @@ Bone Root 0 0 0
 Bone T1 0 -2 -2
 Bone T2 -2 -2 2
 Bone T3 2 -2 2
-Bone A 0 -6 -4
-Bone B -4 -6 4
-Bone C 4 -6 4
+Bone A -4.5 -6 -4.5
+Bone B 4.5 -6 -4.5
+Bone C 0 -6 4.5
 
 LinkState
 Bone Root Children T1 T2 T3
-Bone T1 Children A T2 T3
-Bone T2 Children B T1 T3
-Bone T3 Children C T1 T2
-Bone A Children T2 T3
+Bone T1 Children T2 T3
+Bone T2 Children T1 T3
+Bone T3 Children T1 T2
+Bone A Children T1 T2
 Bone B Children T1 T3
-Bone C Children T1 T2
+Bone C Children T2 T3
 
 Muscles
-Bone A T2 0.05
-Bone A T3 0.05
-Bone B T1 0.05
-Bone B T3 0.05
-Bone C T1 0.05
-Bone C T2 0.05
+Bone A T3 200
+Bone B T2 200
+Bone C T1 200

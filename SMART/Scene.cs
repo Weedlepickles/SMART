@@ -11,6 +11,7 @@ using Jitter.Collision.Shapes;
 using System.Diagnostics;
 using Jitter.Dynamics.Constraints;
 using Jitter.Collision;
+using OpenTK.Graphics.OpenGL4;
 
 namespace SMART
 {
@@ -21,111 +22,160 @@ namespace SMART
 		private Skeleton skeleton;
 		private Jitter.World world;
 
-		public Scene()
-		{
-			CollisionSystemPersistentSAP system = new CollisionSystemPersistentSAP();
+		private Camera camera;
 
+		public Scene(float width, float height)
+		{
+			camera = new Camera(new Vector3(-15, 25, -10), new Vector3((float)Math.PI / 10, (float)Math.PI / 10, 0), width / height);
+
+			CollisionSystemPersistentSAP system = new CollisionSystemPersistentSAP();
 
 			world = new Jitter.World(system);
 			world.Gravity = new JVector(0, 0, 0);
 
-			//float[,] heights = new float[1,1];
-			Shape box = new BoxShape(100, 1, 100);
-			RigidBody ground = new RigidBody(box);
-			ground.IsStatic = true;
-			ground.Position = new JVector(0, -1, 0);
-
-			//Let there be ground, to separate the void from the bones!
-			//world.AddBody(ground);
-
-			world.SetDampingFactors(0.1f, 0.1f);
+			world.SetDampingFactors(0.01f, 0.01f);
 			world.SetInactivityThreshold(0, 0, float.MaxValue);
 		}
 
 		public void Load()
 		{
-			skeleton = new Skeleton("Ben", new Vector3(0, 7, -20), world, "Bug.skeleton");
+			skeleton = new Skeleton("Ben", new Vector3(0, 7, -25), world, "Bug.skeleton");
 
 			foreach (LinearMuscle muscle in skeleton.Muscles)
 			{
-				muscle.Strength = 0;
+				muscle.Strength = 0.8f;
 			}
-			//Load this Scene, maybe nothing needs to be done here?
 		}
 
 		public void Update(TimeSpan deltaTime)
 		{
 			if (skeleton != null && skeleton.Bones != null)
 			{
-
-				foreach (Connection connection in skeleton.Connections)
-				{
-					connection.ForceConnection();
-				}
-
 				foreach (LinearMuscle muscle in skeleton.Muscles)
 				{
-					//muscle.UseMuscle();
+					muscle.UseMuscle();
 				}
 
 				Random random = new Random();
 				foreach (Bone bone in skeleton.Bones)
 				{
-					bone.RigidBody.IsActive = true;
-					bone.RigidBody.IsStatic = false;
-
-					/*
-					float temp1 = 1;
-					float temp2 = 1;
-					float temp3 = 1;
-					if (random.NextDouble() > 0.5d)
-						temp1 *= -1;
-					if (random.NextDouble() > 0.5d)
-						temp2 *= -1;
-					if (random.NextDouble() > 0.5d)
-						temp3 *= -1;
-
-					JVector gravity = new JVector(0.001f * temp1 * (float)random.NextDouble(), 0.001f * temp2 * (float)random.NextDouble(), 0.001f * temp3 * (float)random.NextDouble());
-
-					 */
 					JVector gravity = new JVector(0, -0.000982f, 0);
-
-					if (bone.RigidBody.Position.Y > 0.0001f)
-					{
-						bone.RigidBody.AddForce(gravity);
-					}
-					else
-					{
-						bone.RigidBody.AddForce(-0.005f * gravity);
-					}
-
-					//else if (bone.RigidBody.Position.Y <= 0.25f)
-					//{
-					//	bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X * 0.5f, bone.RigidBody.Force.Y * 0.5f, bone.RigidBody.Force.Z * 0.5f);
-					//	if (bone.RigidBody.LinearVelocity.Y < 0)
-					//		bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
-					//}
-				}
-
-				foreach (Bone bone in skeleton.Bones)
-				{
+					//JVector gravity = new JVector(0, 0, 0);
+					bone.RigidBody.AddForce(gravity);
 					if (bone.RigidBody.Position.Y <= 0)
-					{
-						bone.RigidBody.Position = new JVector(bone.RigidBody.Position.X, 0, bone.RigidBody.Position.Z);
-						bone.RigidBody.Force = new JVector(bone.RigidBody.Force.X, 0, bone.RigidBody.Force.Z);
-						if (bone.RigidBody.LinearVelocity.Y < 0)
-							bone.RigidBody.LinearVelocity = new JVector(bone.RigidBody.LinearVelocity.X, bone.RigidBody.LinearVelocity.Y * -0.5f, bone.RigidBody.LinearVelocity.Z);
-					}
+						bone.RigidBody.AddForce(new JVector(0, -bone.RigidBody.Force.Y, 0));
+					//Debug.WriteLine(bone.Name + " is at position: " + bone.RigidBody.Position);
 				}
+
+				SatisfyConnections();
 			}
 
 			world.Step((float)deltaTime.TotalMilliseconds, false); //Runs without multithreading
 		}
 
+		private void SatisfyConnections()
+		{
+			Dictionary<RigidBody, List<JVector>> storage = new Dictionary<RigidBody, List<JVector>>();
+
+			//Collect all expected positions
+			foreach (Connection connection in skeleton.Connections)
+			{
+				JVector connectionVector = connection.GetConnectionVector();
+				float currentLength = connectionVector.Length();
+
+				if (currentLength > connection.MaxLength || currentLength < connection.MinLength)
+				{
+					float expectedLength;
+
+					if (currentLength > connection.MaxLength)
+						expectedLength = connection.MaxLength;
+					else
+						expectedLength = connection.MinLength;
+
+					float lengthDifference = expectedLength - currentLength;
+
+					RigidBody first = connection.First.RigidBody;
+					RigidBody second = connection.Second.RigidBody;
+
+					connectionVector.Normalize();
+
+					JVector firstPosition;
+					JVector secondPosition;
+
+					//This is where the bodies should be
+					if (first.Position.Y > 0 && second.Position.Y > 0)
+					{
+						firstPosition = first.Position + connectionVector * lengthDifference * 0.5f;
+						secondPosition = second.Position - connectionVector * lengthDifference * 0.5f;
+					}
+					else if (first.Position.Y <= 0 && second.Position.Y <= 0)
+					{
+						firstPosition = first.Position;
+						secondPosition = second.Position;
+					}
+					else if (first.Position.Y <= 0)
+					{
+						firstPosition = first.Position;
+						secondPosition = second.Position - connectionVector * lengthDifference;
+					}
+					else// if (second.Position.Y <= 0)
+					{
+						firstPosition = first.Position + connectionVector * lengthDifference;
+						secondPosition = second.Position;
+					}
+
+					//Add the first
+					if (storage.ContainsKey(first))
+					{
+						storage[first].Add(firstPosition);
+					}
+					else
+					{
+						List<JVector> positionList = new List<JVector>();
+						positionList.Add(firstPosition);
+						storage.Add(first, positionList);
+					}
+
+					//Add the second
+					if (storage.ContainsKey(second))
+					{
+						storage[second].Add(secondPosition);
+					}
+					else
+					{
+						List<JVector> positionList = new List<JVector>();
+						positionList.Add(secondPosition);
+						storage.Add(second, positionList);
+					}
+				}
+			}
+
+			RigidBody[] bodies = storage.Keys.ToArray<RigidBody>();
+
+			//Put the rigidbody in the mean position
+			foreach (RigidBody body in bodies)
+			{
+				List<JVector> list = storage[body];
+				JVector vectorSum = new JVector(0);
+				foreach (JVector vector in list)
+				{
+					vectorSum += vector;
+				}
+				vectorSum = vectorSum * (1f / list.Count);
+				if (vectorSum.Y > 0)
+					body.Position = vectorSum; //Change the position
+				else
+				{
+					body.Position = new JVector(vectorSum.X, 0, vectorSum.Z);
+				}
+			}
+
+		}
+
 		public void Render()
 		{
 			if (skeleton != null)
-				skeleton.Render();
+				skeleton.Render(camera);
 		}
 	}
 }

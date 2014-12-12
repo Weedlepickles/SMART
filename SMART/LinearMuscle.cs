@@ -11,22 +11,25 @@ namespace SMART
 	{
 		private float strength = 0;
 		private Bone first, second;
-		private float length;
 		private float maxForce;
-		private float forceFactor = 0.03f;
+		private const float forceFactor = 0.00001f;
+		private Skeleton owner;
 
-		public LinearMuscle(Bone first, Bone second, float maxForce)
+		private Connection connection;
+
+		public LinearMuscle(Skeleton owner, Bone first, Bone second, float maxForce)
 		{
 			this.first = first;
 			this.second = second;
-
-			length = (first.RigidBody.Position - second.RigidBody.Position).Length();
+			this.owner = owner;
+			connection = new Connection(owner, first, second);
+			connection.MinLength = 0.85f * connection.MaxLength;
 
 			this.maxForce = maxForce;
 		}
 
 		/// <summary>
-		/// Negative strength contracts the muscle.
+		/// A value between 1 and -1. Positive strength contracts the muscle, negative strength expands the muscle. 
 		/// </summary>
 		public float Strength
 		{
@@ -45,29 +48,38 @@ namespace SMART
 			}
 		}
 
+		public Connection Connection
+		{
+			get
+			{
+				return connection;
+			}
+			private set
+			{
+				connection = value;
+			}
+		}
+
 		public void UseMuscle()
 		{
 			JVector forceDirection = first.RigidBody.Position - second.RigidBody.Position;
 			float currentLength = forceDirection.Length();
-			float lengthDifference = length - currentLength;
 			forceDirection.Normalize();
 
-			JVector force;
-			if (lengthDifference < 0) //We have exceeded the original, allowed, length
+			JVector force = JVector.Zero;
+			//Contract the muscle unless it's too close to the minimum length
+			if (strength > 0 && currentLength >= connection.MinLength * 1.02f)
 			{
-				force = forceDirection * forceFactor * lengthDifference * lengthDifference; //Force it back into place
-				if (strength < 0)
-					force += forceDirection * strength * maxForce; //Let the muscle power help
+				force = forceDirection * strength * maxForce * forceFactor;
 			}
-			else 
+			//Expand the muscle unless it's too close to the maximum length
+			else if (strength < 0 && currentLength <= connection.MaxLength * 0.98f)
 			{
-				force = forceDirection * strength * maxForce;
+				force = forceDirection * strength * maxForce * forceFactor;
 			}
-
 			second.RigidBody.AddForce(force);
 			force.Negate();
 			first.RigidBody.AddForce(force);
-
 		}
 	}
 }

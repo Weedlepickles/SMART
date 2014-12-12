@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SMART.Engine
+namespace SMART
 {
     /**
      * Source: http://deathbyalgorithm.blogspot.se/2013/12/basic-opentk-4-window.html

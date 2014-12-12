@@ -15,20 +15,39 @@ namespace SMART
 		private Vector4 color = new Vector4(1); //Opaque white as base-color
 		private Shader shader;
 
-		public Renderer()
+		public Renderer(Vector4 color)
 		{
 			shader = CreateShader("Basic.vertex", "Basic.fragment");
-			//color = Set the color!!!!
+			this.color = color;
 			meshes = new List<ObjMesh>();
 			meshes.Add(new ObjMesh(1, 20));
 		}
-
-		public void Render(Matrix4 transformation)
+		public Renderer(ObjMesh mesh, Vector4 color)
 		{
+			shader = CreateShader("Basic.vertex", "Basic.fragment");
+			this.color = color;
+			meshes = new List<ObjMesh>();
+			meshes.Add(mesh);
+		}
+
+		public void Render(Camera camera, Matrix4 transformation)
+		{
+			//Use this specific shader to render this model
+			GL.UseProgram(shader.Program);
+
+			Matrix4 viewMatrix = camera.ViewMatrix;
+
+			//Tell the GPU where it is we are looking
+			int view_matrix_location = GL.GetUniformLocation(shader.Program, "view_matrix");
+			GL.UniformMatrix4(view_matrix_location, false, ref viewMatrix);
+
 			foreach (ObjMesh mesh in meshes)
 			{
 				RenderMesh(mesh, transformation);
 			}
+
+			//Stop using the shader
+			GL.UseProgram(0);
 		}
 
 		private Shader CreateShader(string vertexShaderFileName, string fragmentShaderFileName)
@@ -41,17 +60,17 @@ namespace SMART
 
 		private void RenderMesh(ObjMesh mesh, Matrix4 transformation)
 		{
-			//Set the right matrix
+			//Tell the GPU where the model is
 			Matrix4 modelMatrix = transformation;
-			int modelMatrixGPULocation = GL.GetUniformLocation(shader.Program, "m_matrix");
+			int modelMatrixGPULocation = GL.GetUniformLocation(shader.Program, "model_matrix");
 			GL.UniformMatrix4(modelMatrixGPULocation, false, ref modelMatrix);
 
-			//Set the right color
+			//Tel the GPU what color the model vertices have
 			int colorGPULocation = GL.GetUniformLocation(shader.Program, "in_color");
 			Vector3 baseColor = new Vector3(color.X, color.Y, color.Z);
 			GL.Uniform3(colorGPULocation, ref baseColor);
 
-			//Render the mesh
+			//Render the model
 			mesh.Render(shader);
 
 		}

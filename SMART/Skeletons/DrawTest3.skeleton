@@ -1,0 +1,11 @@
+﻿CreationState
+Bone Root 0 0 0
+Bone NX -5 0 0
+Bone NZ 0 0 -5
+
+LinkState
+Bone NX Children Root
+Bone NZ Children Root
+
+Muscles
+Bone NZ NX 0
