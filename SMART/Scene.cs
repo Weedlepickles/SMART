@@ -61,9 +61,22 @@ namespace SMART
 
 			skeleton = new Skeleton("Ben", new Vector3(0, 8, 0), world, skeletonFileName);
 
+			ChangeMuscleStrength(0.8f);
+		}
+
+		public void ReverseMuscleStrength()
+		{
 			foreach (LinearMuscle muscle in skeleton.Muscles)
 			{
-				muscle.Strength = 0.8f;
+				muscle.Strength = -muscle.Strength;
+			}
+		}
+
+		public void ChangeMuscleStrength(float strength)
+		{
+			foreach (LinearMuscle muscle in skeleton.Muscles)
+			{
+				muscle.Strength = strength;
 			}
 		}
 

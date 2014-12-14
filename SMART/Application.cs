@@ -89,6 +89,11 @@ namespace SMART
 				ActiveScene.Camera.Position = ActiveScene.Camera.Position + Vector3.UnitX * 0.015f * (float)deltaTime.TotalMilliseconds;
 			}
 
+			if (keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
+			{
+				ActiveScene.ReverseMuscleStrength();
+			}
+
 			previousKeyBoardState = keyBoardState;
 		}
 
