@@ -35,7 +35,7 @@ namespace SMART
 		public void Render(Camera camera)
 		{
 			Vector3 position = new Vector3(rigidBody.Position.X, rigidBody.Position.Y, rigidBody.Position.Z);
-			Matrix4 transformation = Matrix4.CreateTranslation(owner.Position) * Matrix4.CreateTranslation(position);
+			Matrix4 transformation = Matrix4.CreateTranslation(position);
 			renderer.Render(camera, transformation);
 		}
 

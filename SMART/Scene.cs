@@ -28,7 +28,7 @@ namespace SMART
 
 		public Scene(float width, float height)
 		{
-			camera = new Camera(new Vector3(0, 12, 30), new Vector3(0, 0, 0), width / height);
+			camera = new Camera(new Vector3(0, 6, 30), new Vector3(0, 0, 0), width / height);
 			floorRenderer = new Renderer(new ObjMesh(100f, 100f), new Vector4(0.4f, 0.4f, 1, 1));
 		}
 
@@ -194,7 +194,7 @@ namespace SMART
 
 		public void Render()
 		{
-			floorRenderer.Render(camera, Matrix4.CreateTranslation(Vector3.Zero));
+			floorRenderer.Render(camera, Matrix4.CreateTranslation(new Vector3(-50, 0, -50)));
 
 			if (skeleton != null)
 				skeleton.Render(camera);
