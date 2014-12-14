@@ -46,6 +46,46 @@ namespace SMART
 			return true;
 		}
 
+		public static bool LoadSqare(ObjMesh mesh, float length, float height)
+		{
+			if (mesh == null)
+				return false;
+			mesh.Vertices = CalculateSquareVertices(length, height);
+			return true;
+		}
+
+		private static ObjMesh.ObjVertex[] CalculateSquareVertices(float length, float height)
+		{
+			ObjMesh.ObjVertex[] vertices = new ObjMesh.ObjVertex[6];
+
+			vertices[0] = new ObjMesh.ObjVertex();
+			vertices[1] = new ObjMesh.ObjVertex();
+			vertices[2] = new ObjMesh.ObjVertex();
+			vertices[3] = new ObjMesh.ObjVertex();
+
+			vertices[0].Vertex = Vector3.Zero;
+			vertices[0].Normal = Vector3.UnitY;
+			vertices[0].TexCoord = Vector2.Zero;
+
+			vertices[1].Vertex = new Vector3(0, 0, length);
+			vertices[1].Normal = Vector3.UnitY;
+			vertices[1].TexCoord = Vector2.Zero;
+
+			vertices[2].Vertex = new Vector3(height, 0, length);
+			vertices[2].Normal = Vector3.UnitY;
+			vertices[2].TexCoord = Vector2.Zero;
+
+			vertices[3] = vertices[0];
+
+			vertices[4] = vertices[2];
+
+			vertices[5].Vertex = new Vector3(height, 0, 0);
+			vertices[5].Normal = Vector3.UnitY;
+			vertices[5].TexCoord = Vector2.Zero;
+
+			return vertices;
+		}
+
 		private static ObjMesh.ObjVertex[] CalculateCylinderVertices(float radius, float length, int segments)
 		{
 			List<List<ObjMesh.ObjVertex>> vertices = new List<List<ObjMesh.ObjVertex>>();
@@ -81,8 +121,8 @@ namespace SMART
 				baseCircleVertex.Vertex = new Vector3((float)x, (float)y, (float)z);
 				topCircleVertex.Vertex = new Vector3((float)x, (float)y, (float)-z); //Facing the other way (Z)
 
-				baseCircleVertex.Normal = Vector3.Normalize(baseCircleVertex.Vertex);
-				topCircleVertex.Normal = Vector3.Normalize(topCircleVertex.Vertex);
+				baseCircleVertex.Normal = Vector3.Normalize(new Vector3(baseCircleVertex.Vertex.X, baseCircleVertex.Vertex.Y, 0));
+				topCircleVertex.Normal = Vector3.Normalize(new Vector3(topCircleVertex.Vertex.X, topCircleVertex.Vertex.Y, 0));
 
 				baseCircleVertex.TexCoord = new Vector2(1);
 				topCircleVertex.TexCoord = new Vector2(1);

@@ -12,20 +12,43 @@ namespace SMART
 		private Vector3 position;
 		private Vector3 rotation;
 		private Matrix4 projectionMatrix;
-		private Matrix4 cameraTransformationMatrix;
  
 		public Camera(Vector3 position, Vector3 rotation, float aspectRatio)
 		{
 			projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 0.1f, 1000.0f);
 			this.position = position;
-			this.rotation = rotation;
-			cameraTransformationMatrix = Matrix4.CreateRotationZ(rotation.Z) * Matrix4.CreateRotationY(rotation.Y) * Matrix4.CreateRotationX(rotation.X) * Matrix4.CreateTranslation(position).Inverted();
+			this.rotation = (float)Math.PI * (rotation / 180);
+		}
+
+		public Vector3 Position
+		{
+			get
+			{
+				return position;
+			}
+			set
+			{
+				position = value;
+			}
+		}
+
+		public Vector3 Rotation
+		{
+			get
+			{
+				return (rotation * 180) / (float)Math.PI;
+			}
+			private set
+			{
+				rotation = ((float)Math.PI * value) / 180;
+			}
 		}
 
 		public Matrix4 ViewMatrix
 		{
 			get
 			{
+				Matrix4 cameraTransformationMatrix = Matrix4.CreateRotationX(rotation.X) * Matrix4.CreateRotationY(rotation.Y) * Matrix4.CreateRotationZ(rotation.Z) * Matrix4.CreateTranslation(position).Inverted();
 				return cameraTransformationMatrix * projectionMatrix;
 			}
 			private set

@@ -111,7 +111,7 @@ namespace SMART
 			char[] separators = { ',', ' ' };
 			Random random = new Random();
 
-			using (StreamReader reader = new StreamReader("Skeletons/" + fileName))
+			using (StreamReader reader = new StreamReader(fileName))
 			{
 				while (!reader.EndOfStream)
 				{
@@ -150,12 +150,6 @@ namespace SMART
 							{
 								rootBoneCounter++;
 							}
-
-							//Give the bone a random color
-							//Color color = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
-							//bone.SetColor(color);
-
-							//allBones.Add(nodeName, bone);
 						}
 						else if (segments[0].Equals("LinkState"))
 						{
@@ -185,7 +179,7 @@ namespace SMART
 							{
 								Bone childBone = allBones[segments[i]];
 
-								Connection connection = new Connection(this, parentBone, childBone);
+								Connection connection = new Connection(this, parentBone, childBone, new Vector4(1, 0, 0, 1));
 
 								connections.Add(connection);
 							}

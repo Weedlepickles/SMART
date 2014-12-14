@@ -72,8 +72,6 @@ namespace SMART
 
 			//Render the model
 			mesh.Render(shader);
-
 		}
-
 	}
 }

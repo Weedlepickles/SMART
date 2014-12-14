@@ -43,8 +43,15 @@ namespace SMART
 			CreateAndLoadVBO();
 		}
 
-		public ObjMesh()
+		/// <summary>
+		/// Use this constructor to create a square in the xz-plane with a normal along the y-axis.
+		/// </summary>
+		/// <param name="length">Length of square, x-axis</param>
+		/// <param name="height">Height of square, z-axis</param>
+		public ObjMesh(float length, float height)
 		{
+			ObjMeshLoader.LoadSqare(this, length, height);
+			CreateAndLoadVBO();
 		}
 
 		public ObjVertex[] Vertices

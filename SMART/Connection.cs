@@ -17,14 +17,14 @@ namespace SMART
 		private Renderer renderer;
 		private Skeleton owner;
 
-		public Connection(Skeleton owner, Bone first, Bone second)
+		public Connection(Skeleton owner, Bone first, Bone second, Vector4 color)
 		{
 			this.first = first;
 			this.second = second;
 			this.owner = owner;
 			maxLength = GetConnectionVector().Length();
 			minLength = maxLength;
-			renderer = new Renderer(new ObjMesh(0.2f, 1, 10), new Vector4(1, 0, 0, 1));
+			renderer = new Renderer(new ObjMesh(0.2f, 1, 10), color);
 		}
 
 		public Bone First
@@ -96,7 +96,7 @@ namespace SMART
 			Vector3 rotationVector = Vector3.Cross(connectionVector3, Vector3.UnitY);
 			float YToVector = Vector3.CalculateAngle(Vector3.UnitY, connectionVector3);
 
-			Debug.WriteLine(second.Name + " to " + first.Name + " Angle around Y: " + Math.Round(angleAroundY * (180 / Math.PI)) + ", " + Math.Round(YToVector * (180 / Math.PI)) + ", " + (float)((Math.PI / 2) - YToVector) + ", " + connectionVector3);
+			//Debug.WriteLine(second.Name + " to " + first.Name + " Angle around Y: " + Math.Round(angleAroundY * (180 / Math.PI)) + ", " + Math.Round(YToVector * (180 / Math.PI)) + ", " + (float)((Math.PI / 2) - YToVector) + ", " + connectionVector3);
 
 			Matrix4 rotation = Matrix4.Identity;
 			if (!float.IsNaN(angleAroundY))

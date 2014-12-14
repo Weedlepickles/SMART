@@ -1,4 +1,5 @@
 ﻿using Jitter.LinearMath;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SMART
 			this.first = first;
 			this.second = second;
 			this.owner = owner;
-			connection = new Connection(owner, first, second);
+			connection = new Connection(owner, first, second, new Vector4(0, 0, 1, 1));
 			connection.MinLength = 0.85f * connection.MaxLength;
 
 			this.maxForce = maxForce;

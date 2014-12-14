@@ -11,7 +11,9 @@ out vec3 color;
 
 void main(void)
 {
-	float shade = (mat3(model_matrix) * vertex_normal).z;
+	float shade = (mat3(model_matrix) * vertex_normal).z + (mat3(model_matrix) * vertex_normal).y  + (mat3(model_matrix) * vertex_normal).x;
+	if (shade < 0.2)
+		shade = 0.2;
 	color = vec3(shade * in_color.r, shade * in_color.g, shade * in_color.b);
 	gl_Position = view_matrix * model_matrix * vec4(vertex_position, 1.0);
 }

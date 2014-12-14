@@ -24,10 +24,28 @@ namespace SMART
 
 		private Camera camera;
 
+		private Renderer floorRenderer;
+
 		public Scene(float width, float height)
 		{
-			camera = new Camera(new Vector3(-15, 25, -10), new Vector3((float)Math.PI / 10, (float)Math.PI / 10, 0), width / height);
+			camera = new Camera(new Vector3(0, 12, 30), new Vector3(0, 0, 0), width / height);
+			floorRenderer = new Renderer(new ObjMesh(100f, 100f), new Vector4(0.4f, 0.4f, 1, 1));
+		}
 
+		public Camera Camera
+		{
+			get
+			{
+				return camera;
+			}
+			private set
+			{
+				camera = value;
+			}
+		}
+
+		private void InitWorld()
+		{
 			CollisionSystemPersistentSAP system = new CollisionSystemPersistentSAP();
 
 			world = new Jitter.World(system);
@@ -37,9 +55,11 @@ namespace SMART
 			world.SetInactivityThreshold(0, 0, float.MaxValue);
 		}
 
-		public void Load()
+		public void Load(string skeletonFileName)
 		{
-			skeleton = new Skeleton("Ben", new Vector3(0, 7, -25), world, "Bug.skeleton");
+			InitWorld();
+
+			skeleton = new Skeleton("Ben", new Vector3(0, 8, 0), world, skeletonFileName);
 
 			foreach (LinearMuscle muscle in skeleton.Muscles)
 			{
@@ -174,6 +194,8 @@ namespace SMART
 
 		public void Render()
 		{
+			floorRenderer.Render(camera, Matrix4.CreateTranslation(Vector3.Zero));
+
 			if (skeleton != null)
 				skeleton.Render(camera);
 		}
