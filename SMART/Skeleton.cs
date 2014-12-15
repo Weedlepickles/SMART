@@ -98,7 +98,11 @@ namespace SMART
                 Random random = new Random();
                 foreach (Bone bone in Bones)
                 {
-                    bone.RigidBody.AddForce(world.Gravity);
+					if (bone.Name.Equals("Root"))
+						bone.RigidBody.AddForce(world.Gravity * -1);
+					else
+						bone.RigidBody.AddForce(world.Gravity);
+
                     if (world.CollidesWithGround(bone.RigidBody.Position))
                         bone.RigidBody.AddForce(new JVector(0, Math.Abs(bone.RigidBody.Force.Y), 0));
                 }

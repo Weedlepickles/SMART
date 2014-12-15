@@ -87,11 +87,6 @@ namespace SMART
             base.Update(deltaTime);
             float reward = CalculateReward(deltaTime);
 
-            this.Muscles[4].Strength = 0.1f;
-            this.Muscles[5].Strength = 0.1f;
-            this.Muscles[6].Strength = 0.1f;
-            this.Muscles[7].Strength = 0.1f;
-
             List<int> state2 = new List<int>();
             state2.Add(mFrontRightLeg.GetOmegaSteps());
             state2.Add(mFrontRightLeg.Frequency);
