@@ -194,7 +194,9 @@ namespace SMART
 
 		public void Render()
 		{
-			floorRenderer.Render(camera, Matrix4.CreateTranslation(Vector3.Zero));
+
+            //Matrix4.CreateTranslation(-50f, 0f, -50f);
+            floorRenderer.Render(camera, Matrix4.CreateTranslation(-50f, 0f, -50f));
 
 			if (skeleton != null)
 				skeleton.Render(camera);
