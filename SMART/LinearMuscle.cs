@@ -82,5 +82,16 @@ namespace SMART
 			force.Negate();
 			first.RigidBody.AddForce(force);
 		}
+
+        /// <summary>
+        /// Returns a value between 0 and 1 where 0 is its most contracted state, and 1 is the opposite
+        /// </summary>
+        /// <returns></returns>
+        public float GetState() {
+            JVector forceDirection = first.RigidBody.Position - second.RigidBody.Position;
+            float currentLength = forceDirection.Length() - connection.MinLength;
+            float maxLength = connection.MaxLength - connection.MinLength;
+            return currentLength / maxLength;
+        }
 	}
 }

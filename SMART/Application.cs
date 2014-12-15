@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 using System.Diagnostics;
 using OpenTK.Input;
 using System.IO;
+using System.Windows.Forms;
 
 namespace SMART
 {
@@ -72,6 +73,7 @@ namespace SMART
 				/*skeletonNumber = (skeletonNumber + 1) % skeletonFileNames.Length;
 				Console.WriteLine("Loaded " + skeletonFileNames[skeletonNumber]);
 				ActiveScene.Load(skeletonFileNames[skeletonNumber]);*/
+                ActiveScene.Reset();
 			}
 			if (keyBoardState[Key.W])
 			{
@@ -99,10 +101,25 @@ namespace SMART
                 ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation - Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
             }
 
-			/*if (keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
+            if (ActiveScene.cow != null && keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
 			{
-				ActiveScene.ReverseMuscleStrength();
-			}*/
+                if (MessageBox.Show("Save engine state?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    ActiveScene.cow.SaveState();
+                    MessageBox.Show("State saved", "info", MessageBoxButtons.OK);
+                }
+                
+			}
+
+            if (keyBoardState[Key.L] && !previousKeyBoardState[Key.L])
+            {
+                if (ActiveScene.cow != null && MessageBox.Show("Load engine state?", "Load?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    ActiveScene.cow.LoadState();
+                    MessageBox.Show("State loaded", "info", MessageBoxButtons.OK);
+                }
+
+            }
 
 			previousKeyBoardState = keyBoardState;
 		}

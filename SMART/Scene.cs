@@ -22,6 +22,7 @@ namespace SMART
 		private List<Skeleton> mSkeletons;
         private SMARTWorld mWorld;
 		private Camera camera;
+        public CowSkeleton cow;
 
 		public Scene(float width, float height)
 		{
@@ -49,7 +50,16 @@ namespace SMART
 
         public void LoadCowSkeleton(string skeletonFileName)
         {
-            mSkeletons.Add(new CowSkeleton("Cow", new Vector3(0, 8, 0), mWorld, skeletonFileName));
+            cow = new CowSkeleton("Cow", new Vector3(0, 8, 0), mWorld, skeletonFileName);
+            mSkeletons.Add(cow);
+        }
+
+        public void Reset()
+        {
+            foreach (Skeleton s in mSkeletons)
+            {
+                s.Reset();
+            }
         }
 
 		public void Update(TimeSpan deltaTime)

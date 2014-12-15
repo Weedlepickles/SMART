@@ -300,7 +300,7 @@ namespace SMART.AI.Engine
         private QStateActionPair maxStateAction = null;
         private QStateActionPair minExploredStateAction = null;
         private float previousReward = .0f;
-        private int actionCount = 0;
+        private Dictionary<int, int> actionCount = new Dictionary<int, int>();
 
         private float FindMaxStateActionQValue(QState state)
         {
@@ -385,6 +385,18 @@ namespace SMART.AI.Engine
         /// <returns>An array of integers that specifies what action to take.</returns>
         public int[] GetAction(List<int> currentState, float currentReward)
         {
+            return GetAction(currentState, currentReward, 0);
+        }
+
+        /// <summary>
+        /// Updates the Q-Table with state and reward info. It then decides what action to take.
+        /// </summary>
+        /// <param name="currentState">A list of all values that defines the current state.</param>
+        /// <param name="currentReward">The reward that should be associated with this state. Should be kept between 0 and 1.</param>
+        /// <param name="currentReward">If several entities use the same engine, they can be specified here.</param>
+        /// <returns>An array of integers that specifies what action to take.</returns>
+        public int[] GetAction(List<int> currentState, float currentReward, int uniqueEntity)
+        {
             QState state = new QState(currentState);
             float oldQValue = 0;
             float maxQValue = FindMaxStateActionQValue(state);
@@ -393,13 +405,17 @@ namespace SMART.AI.Engine
             QStateActionPair currentStateAction = new QStateActionPair(state, action);
             if (previousStateAction != null)
             {
-                if (previousStateAction.State.Equals(state) && actionCount < RepeatAction)
+                if (!actionCount.ContainsKey(uniqueEntity))
+                    actionCount.Add(uniqueEntity, 0);
+                int ac = 0;
+                actionCount.TryGetValue(uniqueEntity, out ac);
+                if (previousStateAction.State.Equals(state) && ac < RepeatAction)
                 {
-                    actionCount++;
+                    actionCount[uniqueEntity] = (ac + 1);
                     return previousStateAction.Action.Parameters;
                 }
 
-                actionCount = 0;
+                actionCount[uniqueEntity] = 0;
 
                 NTable[currentStateAction] = GetNValue(currentStateAction) + 1;
                     //return currentStateAction.Action.Parameters;

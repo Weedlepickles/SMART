@@ -143,7 +143,6 @@
             this.Name = "QLearningControlPanel";
             this.ShowIcon = false;
             this.Text = "QLearningControlPanel";
-            this.TopMost = true;
             this.Load += new System.EventHandler(this.QLearningControlPanel_Load);
             ((System.ComponentModel.ISupportInitialize)(this.barLR)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.barDF)).EndInit();

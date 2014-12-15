@@ -14,7 +14,7 @@ namespace SMART.AI
         #region Private members
 
         private QLearningEngine mQEngine;
-        private Scene mEnvironment;
+        private SMARTWorld mEnvironment;
         private Skeleton mSkeleton;
         private List<LinearMuscle> mMuscles;
 
@@ -24,17 +24,17 @@ namespace SMART.AI
 
         #endregion
 
-        public QLearningAI(Scene environment, Skeleton myBody, List<LinearMuscle> myMuscles)
+        public QLearningAI(SMARTWorld environment, Skeleton myBody)
         {
-            Initialize(environment, myBody, myMuscles);
+            Initialize(environment, myBody);
         }
 
-        public void Initialize(Scene environment, Skeleton myBody, List<LinearMuscle> myMuscles)
+        public void Initialize(SMARTWorld environment, Skeleton myBody)
         {
             mEnvironment = environment;
             mSkeleton = myBody;
-            mMuscles = myMuscles;
-            mQEngine = QLearningEngine.Create(myMuscles.Count, 3);
+            mMuscles = myBody.Muscles;
+            mQEngine = QLearningEngine.Create(mMuscles.Count, 3);
         }
 
         public void Think()

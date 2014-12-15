@@ -28,10 +28,10 @@ namespace SMART
 
         public Skeleton(string name, Vector3 position, SMARTWorld world, string fileName)
 		{
-			this.position = position;
+            FileName = fileName;
+            this.position = position;
 			this.world = world;
 			LoadSkeleton(fileName);
-			AttachToWorld();
 		}
 
         #region Members
@@ -80,12 +80,13 @@ namespace SMART
 				position = value;
 			}
 		}
+        public string FileName;
 
 		enum SkeletonParserState { StartState, CreationState, LinkState, MuscleState };
 
         #endregion
 
-        public void Update(TimeSpan deltaTime)
+        public virtual void Update(TimeSpan deltaTime)
         {
             if (Bones != null)
             {
@@ -99,14 +100,14 @@ namespace SMART
                 {
                     bone.RigidBody.AddForce(world.Gravity);
                     if (world.CollidesWithGround(bone.RigidBody.Position))
-                        bone.RigidBody.AddForce(new JVector(0, -bone.RigidBody.Force.Y, 0));
+                        bone.RigidBody.AddForce(new JVector(0, Math.Abs(bone.RigidBody.Force.Y), 0));
                 }
 
                 SatisfyConnections();
             }
         }
 
-        public void Render(Camera camera)
+        public virtual void Render(Camera camera)
         {
             foreach (Connection connection in connections)
             {
@@ -120,8 +121,16 @@ namespace SMART
 
         #region private
 
-        private void LoadSkeleton(string fileName)
+        public virtual void Reset()
         {
+            LoadSkeleton(FileName);
+        }
+
+        public void LoadSkeleton(string fileName)
+        {
+            bones = new List<Bone>();
+		    connections = new List<Connection>();
+		    muscles = new List<LinearMuscle>();
             SkeletonParserState state = SkeletonParserState.StartState;
             string line;
             int lineNumber = 0;
@@ -230,6 +239,7 @@ namespace SMART
                     }
                 }
             }
+            AttachToWorld();
         }
 
         private void AttachToWorld()

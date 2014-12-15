@@ -98,6 +98,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Models\Cow.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Models\stanford-bunny.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -154,6 +157,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AI\AITest\QLearningTestForm.resx">
       <DependentUpon>QLearningTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AI\QEngine\QLearningControlPanel.resx">
+      <DependentUpon>QLearningControlPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
