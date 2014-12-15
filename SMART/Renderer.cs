@@ -30,11 +30,18 @@ namespace SMART
 			meshes.Add(mesh);
 		}
 
+        public Renderer(ObjMesh mesh, Vector4 color, string vertexShader, string fragmentShader)
+        {
+            shader = CreateShader(vertexShader, fragmentShader);
+            this.color = color;
+            meshes = new List<ObjMesh>();
+            meshes.Add(mesh);
+        }
+
 		public void Render(Camera camera, Matrix4 transformation)
 		{
 			//Use this specific shader to render this model
 			GL.UseProgram(shader.Program);
-
 			Matrix4 viewMatrix = camera.ViewMatrix;
 
 			//Tell the GPU where it is we are looking
@@ -60,7 +67,8 @@ namespace SMART
 
 		private void RenderMesh(ObjMesh mesh, Matrix4 transformation)
 		{
-			//Tell the GPU where the model is
+            //Console.WriteLine(this.GetType().Name + " transform.Y: " + transformation.Column3[1]);
+            //Tell the GPU where the model is
 			Matrix4 modelMatrix = transformation;
 			int modelMatrixGPULocation = GL.GetUniformLocation(shader.Program, "model_matrix");
 			GL.UniformMatrix4(modelMatrixGPULocation, false, ref modelMatrix);

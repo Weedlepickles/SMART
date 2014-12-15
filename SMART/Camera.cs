@@ -38,7 +38,7 @@ namespace SMART
 			{
 				return (rotation * 180) / (float)Math.PI;
 			}
-			private set
+			set
 			{
 				rotation = ((float)Math.PI * value) / 180;
 			}

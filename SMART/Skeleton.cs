@@ -12,6 +12,7 @@ using SMART.Engine;
 using Jitter;
 using Jitter.Dynamics.Constraints;
 using Jitter.LinearMath;
+using Jitter.Dynamics;
 
 namespace SMART
 {
@@ -23,9 +24,9 @@ namespace SMART
 		private List<Connection> connections = new List<Connection>();
 		private List<LinearMuscle> muscles = new List<LinearMuscle>();
 
-		private World world;
+        private SMARTWorld world;
 
-		public Skeleton(string name, Vector3 position, World world, string fileName)
+        public Skeleton(string name, Vector3 position, SMARTWorld world, string fileName)
 		{
 			this.position = position;
 			this.world = world;
@@ -33,7 +34,9 @@ namespace SMART
 			AttachToWorld();
 		}
 
-		public List<Bone> Bones
+        #region Members
+
+        public List<Bone> Bones
 		{
 			get
 			{
@@ -66,17 +69,6 @@ namespace SMART
 				muscles = value;
 			}
 		}
-		public void Render(Camera camera)
-		{
-			foreach (Connection connection in connections)
-			{
-				connection.Render(camera);
-			}
-			foreach (Bone bone in bones)
-			{
-				bone.Render(camera);
-			}
-		}
 		public Vector3 Position
 		{
 			get
@@ -89,126 +81,265 @@ namespace SMART
 			}
 		}
 
-		private void AttachToWorld()
-		{
-			//Add all the bones' RigidBody to the world
-			foreach (Bone bone in bones)
-			{
-				world.AddBody(bone.RigidBody);
-			}
-		}
-
 		enum SkeletonParserState { StartState, CreationState, LinkState, MuscleState };
-		private void LoadSkeleton(string fileName)
-		{
-			SkeletonParserState state = SkeletonParserState.StartState;
-			string line;
-			int lineNumber = 0;
-			int rootBoneCounter = 0;
-			Dictionary<string, Bone> allBones = new Dictionary<string, Bone>();
-			//ObjMesh boneMesh = new ObjMesh(.30f, 16);
-			CultureInfo culture = new CultureInfo("en-US");
-			char[] separators = { ',', ' ' };
-			Random random = new Random();
 
-			using (StreamReader reader = new StreamReader(fileName))
-			{
-				while (!reader.EndOfStream)
-				{
-					line = reader.ReadLine();
-					lineNumber++;
-					if (line.Length == 0 || line[0] == 47 || line[0] == 32) //ignore if slash or space
-					{
-						//Do nothing, it's a comment or an empty line
-					}
-					else if (state == SkeletonParserState.StartState)
-					{
-						if (line.Equals("CreationState"))
-						{
-							state = SkeletonParserState.CreationState;
-						}
-						else
-						{
-							throw new Exception("Error on line " + lineNumber + ". The word CreationState expected.");
-						}
-					}
-					else if (state == SkeletonParserState.CreationState)
-					{
-						string[] segments = line.Split(separators);
-						if (segments[0].Equals("Bone"))
-						{
-							string boneName = segments[1];
-							float x = float.Parse(segments[2], culture);
-							float y = float.Parse(segments[3], culture);
-							float z = float.Parse(segments[4], culture);
-							Bone bone = new Bone(boneName, new Vector3(x + position.X, y + position.Y, z + position.Z), this);
+        #endregion
 
-							allBones.Add(boneName, bone);
-							bones.Add(bone);
+        public void Update(TimeSpan deltaTime)
+        {
+            if (Bones != null)
+            {
+                foreach (LinearMuscle muscle in Muscles)
+                {
+                    muscle.UseMuscle();
+                }
 
-							if (boneName.Equals("Root"))
-							{
-								rootBoneCounter++;
-							}
-						}
-						else if (segments[0].Equals("LinkState"))
-						{
-							if (rootBoneCounter == 1)
-							{
-								state = SkeletonParserState.LinkState;
-							}
-							else
-							{
-								throw new Exception("Wrong amout of bones with the name Root. We found " + rootBoneCounter + " bones with the name Root.");
-							}
-						}
-						else
-						{
-							throw new Exception("Error on line " + lineNumber + ". The words Bone or LinkState expected.");
-						}
-					}
-					else if (state == SkeletonParserState.LinkState)
-					{
-						string[] segments = line.Split(separators);
-						if (segments[0].Equals("Bone") && segments[2].Equals("Children"))
-						{
-							string boneName = segments[1];
-							Bone parentBone = allBones[boneName];
+                Random random = new Random();
+                foreach (Bone bone in Bones)
+                {
+                    bone.RigidBody.AddForce(world.Gravity);
+                    if (world.CollidesWithGround(bone.RigidBody.Position))
+                        bone.RigidBody.AddForce(new JVector(0, -bone.RigidBody.Force.Y, 0));
+                }
 
-							for (int i = 3; i < segments.Length; i++)
-							{
-								Bone childBone = allBones[segments[i]];
+                SatisfyConnections();
+            }
+        }
 
-								Connection connection = new Connection(this, parentBone, childBone, new Vector4(1, 0, 0, 1));
+        public void Render(Camera camera)
+        {
+            foreach (Connection connection in connections)
+            {
+                connection.Render(camera);
+            }
+            foreach (Bone bone in bones)
+            {
+                bone.Render(camera);
+            }
+        }
 
-								connections.Add(connection);
-							}
+        #region private
 
-						}
-						else if (segments[0].Equals("Muscles"))
-						{
-							state = SkeletonParserState.MuscleState;
-						}
-						else
-						{
-							throw new Exception("Error on line " + lineNumber + ". The words Bone or Children or Muscle expected.");
-						}
-					}
-					else if (state == SkeletonParserState.MuscleState)
-					{
-						string[] segments = line.Split(separators);
-						if (segments[0].Equals("Bone"))
-						{
-							Bone bone1 = allBones[segments[1]];
-							Bone bone2 = allBones[segments[2]];
-							float maxForce = float.Parse(segments[3], culture);
-							LinearMuscle muscle = new LinearMuscle(this, bone1, bone2, maxForce);
-							connections.Add(muscle.Connection);
-							muscles.Add(muscle);
-						}
-					}
-				}
-			}
-		}
-	}
+        private void LoadSkeleton(string fileName)
+        {
+            SkeletonParserState state = SkeletonParserState.StartState;
+            string line;
+            int lineNumber = 0;
+            int rootBoneCounter = 0;
+            Dictionary<string, Bone> allBones = new Dictionary<string, Bone>();
+            //ObjMesh boneMesh = new ObjMesh(.30f, 16);
+            CultureInfo culture = new CultureInfo("en-US");
+            char[] separators = { ',', ' ' };
+            Random random = new Random();
+
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    line = reader.ReadLine();
+                    lineNumber++;
+                    if (line.Length == 0 || line[0] == 47 || line[0] == 32) //ignore if slash or space
+                    {
+                        //Do nothing, it's a comment or an empty line
+                    }
+                    else if (state == SkeletonParserState.StartState)
+                    {
+                        if (line.Equals("CreationState"))
+                        {
+                            state = SkeletonParserState.CreationState;
+                        }
+                        else
+                        {
+                            throw new Exception("Error on line " + lineNumber + ". The word CreationState expected.");
+                        }
+                    }
+                    else if (state == SkeletonParserState.CreationState)
+                    {
+                        string[] segments = line.Split(separators);
+                        if (segments[0].Equals("Bone"))
+                        {
+                            string boneName = segments[1];
+                            float x = float.Parse(segments[2], culture);
+                            float y = float.Parse(segments[3], culture);
+                            float z = float.Parse(segments[4], culture);
+                            Bone bone = new Bone(boneName, new Vector3(x + position.X, y + position.Y, z + position.Z), this);
+
+                            allBones.Add(boneName, bone);
+                            bones.Add(bone);
+
+                            if (boneName.Equals("Root"))
+                            {
+                                rootBoneCounter++;
+                            }
+                        }
+                        else if (segments[0].Equals("LinkState"))
+                        {
+                            if (rootBoneCounter == 1)
+                            {
+                                state = SkeletonParserState.LinkState;
+                            }
+                            else
+                            {
+                                throw new Exception("Wrong amout of bones with the name Root. We found " + rootBoneCounter + " bones with the name Root.");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("Error on line " + lineNumber + ". The words Bone or LinkState expected.");
+                        }
+                    }
+                    else if (state == SkeletonParserState.LinkState)
+                    {
+                        string[] segments = line.Split(separators);
+                        if (segments[0].Equals("Bone") && segments[2].Equals("Children"))
+                        {
+                            string boneName = segments[1];
+                            Bone parentBone = allBones[boneName];
+
+                            for (int i = 3; i < segments.Length; i++)
+                            {
+                                Bone childBone = allBones[segments[i]];
+
+                                Connection connection = new Connection(this, parentBone, childBone, new Vector4(1, 0, 0, 1));
+
+                                connections.Add(connection);
+                            }
+
+                        }
+                        else if (segments[0].Equals("Muscles"))
+                        {
+                            state = SkeletonParserState.MuscleState;
+                        }
+                        else
+                        {
+                            throw new Exception("Error on line " + lineNumber + ". The words Bone or Children or Muscle expected.");
+                        }
+                    }
+                    else if (state == SkeletonParserState.MuscleState)
+                    {
+                        string[] segments = line.Split(separators);
+                        if (segments[0].Equals("Bone"))
+                        {
+                            Bone bone1 = allBones[segments[1]];
+                            Bone bone2 = allBones[segments[2]];
+                            float maxForce = float.Parse(segments[3], culture);
+                            LinearMuscle muscle = new LinearMuscle(this, bone1, bone2, maxForce);
+                            connections.Add(muscle.Connection);
+                            muscles.Add(muscle);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AttachToWorld()
+        {
+            //Add all the bones' RigidBody to the world
+            foreach (Bone bone in bones)
+            {
+                world.AddBody(bone.RigidBody);
+            }
+        }
+
+        private void SatisfyConnections()
+        {
+            Dictionary<RigidBody, List<JVector>> storage = new Dictionary<RigidBody, List<JVector>>();
+
+            //Collect all expected positions
+            foreach (Connection connection in Connections)
+            {
+                JVector connectionVector = connection.GetConnectionVector();
+                float currentLength = connectionVector.Length();
+
+                if (currentLength > connection.MaxLength || currentLength < connection.MinLength)
+                {
+                    float expectedLength;
+
+                    if (currentLength > connection.MaxLength)
+                        expectedLength = connection.MaxLength;
+                    else
+                        expectedLength = connection.MinLength;
+
+                    float lengthDifference = expectedLength - currentLength;
+
+                    RigidBody first = connection.First.RigidBody;
+                    RigidBody second = connection.Second.RigidBody;
+
+                    connectionVector.Normalize();
+
+                    JVector firstPosition;
+                    JVector secondPosition;
+
+                    //This is where the bodies should be
+                    if (first.Position.Y > 0 && second.Position.Y > 0)
+                    {
+                        firstPosition = first.Position + connectionVector * lengthDifference * 0.5f;
+                        secondPosition = second.Position - connectionVector * lengthDifference * 0.5f;
+                    }
+                    else if (first.Position.Y <= 0 && second.Position.Y <= 0)
+                    {
+                        firstPosition = first.Position;
+                        secondPosition = second.Position;
+                    }
+                    else if (first.Position.Y <= 0)
+                    {
+                        firstPosition = first.Position;
+                        secondPosition = second.Position - connectionVector * lengthDifference;
+                    }
+                    else// if (second.Position.Y <= 0)
+                    {
+                        firstPosition = first.Position + connectionVector * lengthDifference;
+                        secondPosition = second.Position;
+                    }
+
+                    //Add the first
+                    if (storage.ContainsKey(first))
+                    {
+                        storage[first].Add(firstPosition);
+                    }
+                    else
+                    {
+                        List<JVector> positionList = new List<JVector>();
+                        positionList.Add(firstPosition);
+                        storage.Add(first, positionList);
+                    }
+
+                    //Add the second
+                    if (storage.ContainsKey(second))
+                    {
+                        storage[second].Add(secondPosition);
+                    }
+                    else
+                    {
+                        List<JVector> positionList = new List<JVector>();
+                        positionList.Add(secondPosition);
+                        storage.Add(second, positionList);
+                    }
+                }
+            }
+
+            RigidBody[] bodies = storage.Keys.ToArray<RigidBody>();
+
+            //Put the rigidbody in the mean position
+            foreach (RigidBody body in bodies)
+            {
+                List<JVector> list = storage[body];
+                JVector vectorSum = new JVector(0);
+                foreach (JVector vector in list)
+                {
+                    vectorSum += vector;
+                }
+                vectorSum = vectorSum * (1f / list.Count);
+                if (vectorSum.Y > 0)
+                    body.Position = vectorSum; //Change the position
+                else
+                {
+                    body.Position = new JVector(vectorSum.X, 0, vectorSum.Z);
+                }
+            }
+
+        }
+
+        #endregion
+    }
 }
