@@ -17,7 +17,7 @@ namespace SMART
         public SMARTWorld(CollisionSystemPersistentSAP system)
             : base(system)
         {
-            float ygrav = -0.000982f;
+            float ygrav = -0.0005f;
             Gravity = new JVector(0, ygrav, 0);
 
             SetDampingFactors(0.01f, 0.01f);
