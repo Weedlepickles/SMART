@@ -112,11 +112,22 @@ namespace SMART
             mBackRightLeg.Update(deltaTime);
             mBackLeftLeg.Update(deltaTime);
 
-            if (CalculateAveragePosition().Y < 2.5f)
+            if (CheckIfRestartNeeded())
             {
                 Reset();
             }
             
+        }
+
+        private bool CheckIfRestartNeeded()
+        {
+            if (Bones.Find(b => b.Name.Contains("FL")).RigidBody.Position.Y < 0.1f) return true;
+            if (Bones.Find(b => b.Name.Contains("FM")).RigidBody.Position.Y < 0.1f) return true;
+            if (Bones.Find(b => b.Name.Contains("FR")).RigidBody.Position.Y < 0.1f) return true;
+            if (Bones.Find(b => b.Name.Contains("BL")).RigidBody.Position.Y < 0.1f) return true;
+            if (Bones.Find(b => b.Name.Contains("BM")).RigidBody.Position.Y < 0.1f) return true;
+            if (Bones.Find(b => b.Name.Contains("BR")).RigidBody.Position.Y < 0.1f) return true;
+            return false;
         }
 
         private void UpdateLeg(CowLeg leg, int[] action)
