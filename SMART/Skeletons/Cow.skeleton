@@ -1,5 +1,5 @@
 ﻿CreationState
-Bone Root 0 8 0
+Bone Root 0 10 0
 Bone FR -7 5 -5
 Bone FM -7 5 0
 Bone FL -7 5 5
@@ -12,11 +12,11 @@ Bone HBR 10 -3 -2.5
 Bone HBL 10 -3 2.5
 
 LinkState
-Bone Root Children FR FM FL BR BM BL
-Bone FR Children BR BM
+Bone Root Children FM BM
+Bone FR Children BR BM BL
 Bone FM Children FR FL BR BM BL
 Bone BM Children BR BL FR FL
-Bone FL Children BL
+Bone FL Children BL BR
 
 Bone HFR Children FR FM
 Bone HFL Children FM FL
@@ -28,3 +28,7 @@ Bone HFR BR 400
 Bone HFL BL 400
 Bone HBR FR 400
 Bone HBL FL 400
+Bone Root FR 800
+Bone Root FL 800
+Bone Root BR 800
+Bone Root BL 800
