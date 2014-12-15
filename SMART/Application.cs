@@ -14,7 +14,8 @@ namespace SMART
 {
 	public class Application : GameWindow
 	{
-		private DateTime lastUpdate;
+        
+        private DateTime lastUpdate;
 		private KeyboardState previousKeyBoardState;
 		string[] skeletonFileNames;
 		int skeletonNumber = 0;
@@ -35,7 +36,7 @@ namespace SMART
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			GL.ClearColor(0.10f, 0.795f, 0.10f, 1.0f);
+			GL.ClearColor(0.65f, 0.8f, 1f, 1.0f);
 
 			GL.Enable(EnableCap.DepthTest);
 			GL.Enable(EnableCap.CullFace);
@@ -43,7 +44,7 @@ namespace SMART
 
 			skeletonFileNames = Directory.GetFiles("Skeletons");
 
-			ActiveScene.Load(skeletonFileNames[0]);
+            ActiveScene.LoadCowSkeleton(skeletonFileNames.First(n => n.Contains("Cow")));
 
 			lastUpdate = DateTime.Now;
 		}
@@ -68,9 +69,9 @@ namespace SMART
 			if (keyBoardState[Key.Enter] && !previousKeyBoardState[Key.Enter])
 			{
 				//Load new skeleton!
-				skeletonNumber = (skeletonNumber + 1) % skeletonFileNames.Length;
+				/*skeletonNumber = (skeletonNumber + 1) % skeletonFileNames.Length;
 				Console.WriteLine("Loaded " + skeletonFileNames[skeletonNumber]);
-				ActiveScene.Load(skeletonFileNames[skeletonNumber]);
+				ActiveScene.Load(skeletonFileNames[skeletonNumber]);*/
 			}
 			if (keyBoardState[Key.W])
 			{
@@ -89,10 +90,19 @@ namespace SMART
 				ActiveScene.Camera.Position = ActiveScene.Camera.Position + Vector3.UnitX * 0.015f * (float)deltaTime.TotalMilliseconds;
 			}
 
-			if (keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
+            if (keyBoardState[Key.Q])
+            {
+                ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation + Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
+            }
+            if (keyBoardState[Key.E])
+            {
+                ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation - Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
+            }
+
+			/*if (keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
 			{
 				ActiveScene.ReverseMuscleStrength();
-			}
+			}*/
 
 			previousKeyBoardState = keyBoardState;
 		}

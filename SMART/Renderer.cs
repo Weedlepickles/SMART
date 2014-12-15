@@ -30,6 +30,14 @@ namespace SMART
 			meshes.Add(mesh);
 		}
 
+        public Renderer(ObjMesh mesh, Vector4 color, string vertexShader, string fragmentShader)
+        {
+            shader = CreateShader(vertexShader, fragmentShader);
+            this.color = color;
+            meshes = new List<ObjMesh>();
+            meshes.Add(mesh);
+        }
+
 		public void Render(Camera camera, Matrix4 transformation)
 		{
 			//Use this specific shader to render this model
