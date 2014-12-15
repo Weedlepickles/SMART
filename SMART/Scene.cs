@@ -28,7 +28,7 @@ namespace SMART
 
 		public Scene(float width, float height)
 		{
-			camera = new Camera(new Vector3(0, 12, 30), new Vector3(0, 0, 0), width / height);
+			camera = new Camera(new Vector3(0, 6, 30), new Vector3(0, 0, 0), width / height);
 			floorRenderer = new Renderer(new ObjMesh(100f, 100f), new Vector4(0.4f, 0.4f, 1, 1));
 		}
 
@@ -61,9 +61,22 @@ namespace SMART
 
 			skeleton = new Skeleton("Ben", new Vector3(0, 8, 0), world, skeletonFileName);
 
+			ChangeMuscleStrength(0.8f);
+		}
+
+		public void ReverseMuscleStrength()
+		{
 			foreach (LinearMuscle muscle in skeleton.Muscles)
 			{
-				muscle.Strength = 0.8f;
+				muscle.Strength = -muscle.Strength;
+			}
+		}
+
+		public void ChangeMuscleStrength(float strength)
+		{
+			foreach (LinearMuscle muscle in skeleton.Muscles)
+			{
+				muscle.Strength = strength;
 			}
 		}
 
@@ -194,9 +207,7 @@ namespace SMART
 
 		public void Render()
 		{
-
-            //Matrix4.CreateTranslation(-50f, 0f, -50f);
-            floorRenderer.Render(camera, Matrix4.CreateTranslation(-50f, 0f, -50f));
+			floorRenderer.Render(camera, Matrix4.CreateTranslation(new Vector3(-50, 0, -50)));
 
 			if (skeleton != null)
 				skeleton.Render(camera);

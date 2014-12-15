@@ -88,7 +88,6 @@ namespace SMART
 			Vector3 position = new Vector3(first.RigidBody.Position.X - 0.5f * connectionJVector.X, first.RigidBody.Position.Y - 0.5f * connectionJVector.Y, first.RigidBody.Position.Z - 0.5f * connectionJVector.Z);
 
 			Matrix4 modelTranslation = Matrix4.CreateTranslation(position);
-			Matrix4 worldTranslation = Matrix4.CreateTranslation(owner.Position);
 			Matrix4 scale = Matrix4.CreateScale(1, 1, connectionVector3.Length);
 
 			float angleAroundY = Vector3.CalculateAngle(Vector3.UnitZ, new Vector3(connectionVector3.X, 0, connectionVector3.Z));
@@ -141,7 +140,7 @@ namespace SMART
 				rotation = rotation * Matrix4.CreateRotationX((float)(Math.PI / 2) - YToVector);
 
 
-			Matrix4 transformation = scale * rotation * modelTranslation * worldTranslation;
+			Matrix4 transformation = scale * rotation * modelTranslation;
 
 			renderer.Render(camera, transformation);
 		}

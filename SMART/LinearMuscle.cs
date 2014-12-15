@@ -24,7 +24,7 @@ namespace SMART
 			this.second = second;
 			this.owner = owner;
 			connection = new Connection(owner, first, second, new Vector4(0, 0, 1, 1));
-			connection.MinLength = 0.85f * connection.MaxLength;
+			connection.MinLength = 0.80f * connection.MaxLength;
 
 			this.maxForce = maxForce;
 		}
