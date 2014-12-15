@@ -58,7 +58,7 @@ namespace SMART
 
 			KeyHandler(deltaTime);
 
-			deltaTime = new TimeSpan(0, 0, 0, 0, 5);
+			deltaTime = new TimeSpan(0, 0, 0, 0, 10);
 
 			UpdateState(deltaTime);
 		}
