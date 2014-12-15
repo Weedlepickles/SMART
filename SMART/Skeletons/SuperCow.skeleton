@@ -1,0 +1,30 @@
+﻿CreationState
+Bone Root 0 8 0
+Bone FR -7 5 -5
+Bone FM -7 5 0
+Bone FL -7 5 5
+Bone BR 7 5 -5
+Bone BM 7 5 0
+Bone BL 7 5 5
+Bone HFR -10 -3 -2.5
+Bone HFL -10 -3 2.5
+Bone HBR 10 -3 -2.5
+Bone HBL 10 -3 2.5
+
+LinkState
+Bone Root Children FR FM FL BR BM BL
+Bone FR Children BR BM
+Bone FM Children FR FL BR BM BL
+Bone BM Children BR BL FR FL
+Bone FL Children BL
+
+Bone HFR Children FR FM
+Bone HFL Children FM FL
+Bone HBR Children BR BM
+Bone HBL Children BM BL
+
+Muscles
+Bone HFR BR 200
+Bone HFL BL 200
+Bone HBR FR 200
+Bone HBL FL 200
