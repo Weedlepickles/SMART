@@ -38,7 +38,7 @@ namespace SMART
 		public CowSkeleton(string name, Vector3 position, SMARTWorld world, string fileName)
 			: base(name, position, world, fileName)
 		{
-			AIEngine = QLearningEngine.Create(Muscles.Count, DicretizationSteps);
+			AIEngine = QLearningEngine.Create(4, DicretizationSteps);
 
 			QLearningControlPanel front = new QLearningControlPanel(AIEngine);
 
@@ -58,7 +58,7 @@ namespace SMART
 			positions = new List<JVector>();
 			deltaTimes = new List<int>();
 			AIEngine.Reset();
-
+            AIEngine.RepeatAction = 20;
 			mFrontRightLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[FRONT_RIGHT]);
 			mFrontLeftLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[FRONT_LEFT]);
 			mBackRightLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[BACK_RIGHT]);
@@ -446,7 +446,7 @@ namespace SMART
 			public int GetOmegaSteps()
 			{
 				//return (int)Math.Round(mMuscle.GetState() * mDicretizationSteps);
-				return (int)Math.Round((CurrentOmega / TWO_PI) * 4);
+				return (int)Math.Round((CurrentOmega / TWO_PI) * 3);
 			}
 		}
 

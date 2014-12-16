@@ -11,15 +11,18 @@ Bone HFR -10 -3 -4
 Bone HFL -10 -3 4
 Bone HBR 10 -3 -4
 Bone HBL 10 -3 4
+Bone Head 9 10 0
+Bone Tail -11 5 0
 
 LinkState
-Bone Root Children Sub FM BM FR FL BR BL
+Bone Root Children Sub FM BM FR FL BR BL Head
 Bone FR Children BR BM BL
-Bone FM Children FR FL BR BM BL
-Bone BM Children BR BL FR FL
+Bone FM Children FR FL BR BM BL Tail
+Bone BM Children BR BL FR FL Head
 Bone FL Children BL BR
 Bone Sub Children FM BM FR FL BR BL
-
+Bone BL Children Head
+Bone BR Children Head
 Bone HFR Children FR FM HFL
 Bone HFL Children FL FM
 Bone HBR Children BR BM HBL
@@ -30,7 +33,7 @@ Bone HFR BM 600
 Bone HFL BM 600
 Bone HBR FM 600
 Bone HBL FM 600
- Bone FR HFR 600
- Bone FL HFL 600
- Bone BR HBR 600
- Bone BL HBL 600
+Bone FR HFR 600
+Bone FL HFL 600
+Bone BR HBR 600
+Bone BL HBL 600
