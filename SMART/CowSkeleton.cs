@@ -445,8 +445,8 @@ namespace SMART
 				mDicretizationSteps = steps;
 				maxAmp = maxAmplitude;
 				maxFreq = maxFrequency;
-				Amplitude = mDicretizationSteps;
-				Frequency = mDicretizationSteps;
+				Amplitude = mDicretizationSteps-1;
+				Frequency = mDicretizationSteps-1;
 				CurrentOmega = 0;
 			}
 
