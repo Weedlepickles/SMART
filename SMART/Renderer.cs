@@ -38,6 +38,18 @@ namespace SMART
             meshes.Add(mesh);
         }
 
+		public Vector4 Color
+		{
+			get
+			{
+				return color;
+			}
+			set
+			{
+				color = value;
+			}
+		}
+
 		public void Render(Camera camera, Matrix4 transformation)
 		{
 			//Use this specific shader to render this model

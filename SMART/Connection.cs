@@ -49,6 +49,17 @@ namespace SMART
 				second = value;
 			}
 		}
+		public Vector4 Color
+		{
+			get
+			{
+				return renderer.Color;
+			}
+			set
+			{
+				renderer.Color = value;
+			}
+		}
 		public float MaxLength
 		{
 			get

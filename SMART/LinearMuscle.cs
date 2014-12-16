@@ -46,6 +46,9 @@ namespace SMART
 					strength = 1;
 				else
 					strength = -1;
+				float saturation1 = (float)(-strength * 0.5) + 0.5f;
+				float saturation2 = (float)(strength * 0.5) + 0.5f;
+				connection.Color = new Vector4(saturation1, saturation1, saturation2, 1);
 			}
 		}
 
