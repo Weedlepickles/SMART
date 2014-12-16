@@ -234,7 +234,7 @@ namespace SMART
 			}
 
 			if (iterationNumber % 1000 == 0)
-				Console.WriteLine("We have now run " + iterationNumber + " iterations.");
+				Console.WriteLine("We have now run " + iterationNumber + " iterations. We have discovered " + AIEngine.GetCombinations() + " so far.");
 			iterationNumber++;
 
 		}
