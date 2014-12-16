@@ -172,17 +172,33 @@ namespace SMART
 				state2.Add(GetMuscleState(muscle));
 			}*/
 
-			state2.Add(mFrontRightLeg.GetOmegaSteps());
-			state2.Add(mFrontRightLeg.Frequency);
+			int temp1 = mFrontRightLeg.GetOmegaSteps();
+			int temp2 = mFrontRightLeg.Frequency;
+			if (temp1 > 2 || temp2 > 2)
+				throw new Exception();
+			state2.Add(temp1);
+			state2.Add(temp2);
 
-			state2.Add(mFrontLeftLeg.GetOmegaSteps());
-			state2.Add(mFrontLeftLeg.Frequency);
+			temp1 = mFrontLeftLeg.GetOmegaSteps();
+			temp2 = mFrontLeftLeg.Frequency;
+			if (temp1 > 2 || temp2 > 2)
+				throw new Exception();
+			state2.Add(temp1);
+			state2.Add(temp2);
 
-			state2.Add(mBackRightLeg.GetOmegaSteps());
-			state2.Add(mBackRightLeg.Frequency);
+			temp1 = mBackRightLeg.GetOmegaSteps();
+			temp2 = mBackRightLeg.Frequency;
+			if (temp1 > 2 || temp2 > 2)
+				throw new Exception();
+			state2.Add(temp1);
+			state2.Add(temp2);
 
-			state2.Add(mBackLeftLeg.GetOmegaSteps());
-			state2.Add(mBackLeftLeg.Frequency);
+			temp1 = mBackLeftLeg.GetOmegaSteps();
+			temp2 = mBackLeftLeg.Frequency;
+			if (temp1 > 2 || temp2 > 2)
+				throw new Exception();
+			state2.Add(temp1);
+			state2.Add(temp2);
 			
 
 			//state2.Add(GetDirectionState());
