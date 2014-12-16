@@ -438,7 +438,7 @@ namespace SMART
 			{
 				float f = (maxFreq / mDicretizationSteps) * Frequency;
 				float dW = ANGLE_STEP * f * deltaTime.Milliseconds;
-				CurrentOmega = (CurrentOmega + dW) % TWO_PI;
+				CurrentOmega = (CurrentOmega + dW) % (TWO_PI - 0.0000001f);
 				float a = (maxAmp / mDicretizationSteps) * Amplitude;
 				mMuscle.Strength = ((float)Math.Sin(((double)CurrentOmega))) * a;
 			}
@@ -446,7 +446,8 @@ namespace SMART
 			public int GetOmegaSteps()
 			{
 				//return (int)Math.Round(mMuscle.GetState() * mDicretizationSteps);
-				return (int)Math.Round((CurrentOmega / TWO_PI) * 3);
+                int res = (int)Math.Round((CurrentOmega / TWO_PI) * 3);
+                return (res <= 2) ? res : 2;
 			}
 		}
 
