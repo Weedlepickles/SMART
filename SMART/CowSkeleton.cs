@@ -15,7 +15,7 @@ namespace SMART
 	{
 		private int DicretizationSteps = 3;
 		private float Amplitude = 1;
-		private float Frequency = 5f;
+		private float Frequency = 0f;
 
 		QLearningEngine AIEngine;
 		CowLeg mFrontRightLeg;
@@ -42,10 +42,10 @@ namespace SMART
 
 			QLearningControlPanel front = new QLearningControlPanel(AIEngine);
 
-			mFrontRightLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[FRONT_RIGHT]);
-			mFrontLeftLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[FRONT_LEFT]);
-			mBackRightLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[BACK_RIGHT]);
-			mBackLeftLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[BACK_LEFT]);
+			mFrontRightLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[FRONT_RIGHT]);
+            mFrontLeftLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[FRONT_LEFT]);
+            mBackRightLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[BACK_RIGHT]);
+            mBackLeftLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[BACK_LEFT]);
 
 			front.Show();
 			CowMesh = new ObjMesh("Models/Cow.obj");
@@ -59,10 +59,10 @@ namespace SMART
 			deltaTimes = new List<int>();
 			AIEngine.Reset();
             AIEngine.RepeatAction = 20;
-			mFrontRightLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[FRONT_RIGHT]);
-			mFrontLeftLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[FRONT_LEFT]);
-			mBackRightLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[BACK_RIGHT]);
-			mBackLeftLeg = new CowLeg(DicretizationSteps, Amplitude, Frequency, this.Muscles[BACK_LEFT]);
+            mFrontRightLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[FRONT_RIGHT]);
+            mFrontLeftLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[FRONT_LEFT]);
+            mBackRightLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[BACK_RIGHT]);
+            mBackLeftLeg = new CowLeg(DicretizationSteps, Amplitude, 5.0f, this.Muscles[BACK_LEFT]);
 		}
 
 		public void SaveState()
@@ -446,7 +446,7 @@ namespace SMART
 			public int GetOmegaSteps()
 			{
 				//return (int)Math.Round(mMuscle.GetState() * mDicretizationSteps);
-                int res = (int)Math.Round((CurrentOmega / TWO_PI) * 3);
+                int res = (int)Math.Round((CurrentOmega / TWO_PI) * 2);
                 return (res <= 2) ? res : 2;
 			}
 		}
