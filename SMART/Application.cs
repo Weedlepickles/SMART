@@ -44,7 +44,7 @@ namespace SMART
 			if (ActiveScene.cow != null)
 			{
 				DateTime now = DateTime.Now;
-				string fileName = "AutoSaves\\Autosave_" + now.Year + "-" + now.Day + "-" + now.TimeOfDay.TotalMilliseconds + ".txt";
+				string fileName = "AutoSaves\\Autosave_" + now.Year + "-" + now.Day + "-" + Math.Round(now.TimeOfDay.TotalMilliseconds) + ".txt";
 				Console.WriteLine("Autosave done " + fileName);
 				ActiveScene.cow.SaveState(fileName);
 			}

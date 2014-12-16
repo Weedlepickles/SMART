@@ -285,7 +285,7 @@ namespace SMART.AI.Engine
             LearningRate = .9f;
             DiscountFactor = .8f;
             ExplorationFactor = .5f;
-            RepeatAction = 30;
+            RepeatAction = 20;
         }
 
         #endregion
@@ -352,6 +352,11 @@ namespace SMART.AI.Engine
         #endregion
 
         #region Public
+
+		public int GetCombinations()
+		{
+			return QTable.Keys.Count;
+		}
 
         /// <summary>
         /// Determines how to make use of new knowledge.
