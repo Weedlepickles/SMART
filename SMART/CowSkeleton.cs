@@ -38,7 +38,7 @@ namespace SMART
 		public CowSkeleton(string name, Vector3 position, SMARTWorld world, string fileName)
 			: base(name, position, world, fileName)
 		{
-			AIEngine = QLearningEngine.Create(4, DicretizationSteps);
+			AIEngine = QLearningEngine.Create(Muscles.Count, DicretizationSteps);
 
 			QLearningControlPanel front = new QLearningControlPanel(AIEngine);
 
@@ -70,6 +70,11 @@ namespace SMART
 			AIEngine.SaveState("AISavedState.txt");
 		}
 
+		public void SaveState(string filename)
+		{
+			AIEngine.SaveState(filename);
+		}
+
 		public void LoadState()
 		{
 			Reset();
@@ -82,7 +87,66 @@ namespace SMART
 			//meshRenderer.Render(camera, Matrix4.CreateRotationY((float)Math.PI / -2.0f) * Matrix4.CreateTranslation(new Vector3(-1.5f, 0, 0)) * Matrix4.CreateScale(1.7f));
 		}
 
+		private Bone subBone;
+		private Bone bmBone;
+		private int GetDirectionState()
+		{
+			foreach (Bone bone in Bones)
+			{
+				if (bone.Name.Equals("Sub"))
+				{
+					subBone = bone;
+				}
+				else if (bone.Name.Equals("BM"))
+				{
+					bmBone = bone;
+				}
+			}
+
+			JVector directionVector = bmBone.RigidBody.Position - subBone.RigidBody.Position;
+			directionVector.Normalize();
+
+			float value = directionVector * JVector.Left;
+
+			int result;
+			if (value > 0.8)
+				result = 0;
+			else if (directionVector.Z > 0)
+				result = 1;
+			else
+				result = 2;
+			return result;
+		}
+
+		private int GetMuscleState(LinearMuscle muscle)
+		{
+			float maxLength = muscle.Connection.MaxLength;
+			float minLength = muscle.Connection.MinLength;
+			float length = muscle.Connection.Length;
+			float lengthSpan = maxLength - minLength;
+			length = length - minLength;
+
+			if (length < 0.33 * lengthSpan)
+				return 0;
+			else if (length < 0.66 * lengthSpan)
+				return 1;
+			else
+				return 2;
+
+		}
+
+		private Bone GetBone(string name)
+		{
+			foreach (Bone bone in Bones)
+			{
+				if (bone.Name.Equals(name))
+					return bone;
+			}
+			return null;
+		}
+
 		private long iterationNumber = 0;
+		private long resetTimer = 0;
 		public override void Update(TimeSpan deltaTime)
 		{
 			base.Update(deltaTime);
@@ -91,10 +155,23 @@ namespace SMART
 
 			if (CheckIfRestartNeeded())
 			{
-				reward = -3000;
+				reward = 0;
+			}
+
+			Bone sub = GetBone("Sub");
+			if (sub != null && sub.RigidBody.Position.X > 55)
+			{
+				reward = 1;
 			}
 
 			List<int> state2 = new List<int>();
+
+			/*
+			foreach (LinearMuscle muscle in Muscles)
+			{
+				state2.Add(GetMuscleState(muscle));
+			}*/
+
 			state2.Add(mFrontRightLeg.GetOmegaSteps());
 			state2.Add(mFrontRightLeg.Frequency);
 
@@ -106,13 +183,29 @@ namespace SMART
 
 			state2.Add(mBackLeftLeg.GetOmegaSteps());
 			state2.Add(mBackLeftLeg.Frequency);
+			
+
+			//state2.Add(GetDirectionState());
 
 			int[] action = AIEngine.GetAction(state2, reward);
 
-			mFrontRightLeg.Frequency = action[0];
-			mFrontLeftLeg.Frequency = action[1];
-			mBackRightLeg.Frequency = action[2];
-			mBackLeftLeg.Frequency = action[3];
+			/*
+			int i = 0;
+			foreach (LinearMuscle muscle in Muscles)
+			{
+				if (action[i] == 0)
+					muscle.Strength = -1;
+				else if (action[i] == 1)
+					muscle.Strength = 0;
+				else
+					muscle.Strength = 1;
+				i++;
+			}*/
+
+			mFrontRightLeg.Frequency = action[3];
+			mFrontLeftLeg.Frequency = action[2];
+			mBackRightLeg.Frequency = action[1];
+			mBackLeftLeg.Frequency = action[0];
 
 			mFrontRightLeg.Update(deltaTime);
 			mFrontLeftLeg.Update(deltaTime);
@@ -122,6 +215,22 @@ namespace SMART
 			if (CheckIfRestartNeeded())
 			{
 				Reset();
+				resetTimer = iterationNumber + 6000;
+				Console.WriteLine("Fallen: Next reset at " + resetTimer + " iterations.");
+			}
+
+			if (sub != null && sub.RigidBody.Position.X > 55)
+			{
+				Reset();
+				resetTimer = iterationNumber + 6000;
+				Console.WriteLine("Maxed: Next reset at " + resetTimer + " iterations.");
+			}
+
+			if (resetTimer < iterationNumber)
+			{
+				Reset();
+				resetTimer = iterationNumber + 6000;
+				Console.WriteLine("Timeout: Next reset at " + resetTimer + " iterations.");
 			}
 
 			if (iterationNumber % 1000 == 0)
@@ -173,7 +282,7 @@ namespace SMART
 
 		private int printCounter = 0;
 		private float rewardCounter = 0;
-		private JVector meanSubPosition = new JVector(0,0,0);
+		private JVector meanSubPosition = new JVector(0, 0, 0);
 		private Dictionary<Bone, JVector> bonePositions = new Dictionary<Bone, JVector>();
 		private float CalculateRewardII(TimeSpan deltaTime)
 		{
@@ -186,6 +295,12 @@ namespace SMART
 			{
 				if (bone.Name.Equals("Sub"))
 				{
+					reward += bone.RigidBody.Position.X * 0.0001f + 0.1f;
+					reward += bone.RigidBody.Position.Y * 0.000001f;
+
+					meanSubPosition = meanSubPosition + bone.RigidBody.Position;
+
+					/*
 					//Give a reward for having progressed toward X
 					float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 20;
 					if (!float.IsNaN(temp) && !float.IsInfinity(temp))
@@ -204,75 +319,19 @@ namespace SMART
 
 					//if (printCounter == 1)
 					//	Console.WriteLine("Sub position X: " + meanSubPosition + bone.RigidBody.Position);
+					 */
 				}
 				else if (bone.Name.Equals("HFR"))
 				{
-					//Give a reward for having progressed toward X
-					float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 5;
-					if (!float.IsNaN(temp) && !float.IsInfinity(temp))
-						reward += temp;
-					else
-						reward += bone.RigidBody.Position.X;
-
-					//reward += bone.RigidBody.LinearVelocity.Length() * 0.1f * velocityFactor;
-					JVector speedVector = GetSpeed(bone, deltaTime);
-					float speed = speedVector.Length();
-
-					reward += speed * 10000 * velocityFactor;
-
-					//if (speed > 0.0001)
-					//	Console.WriteLine("HFR: " + Math.Round(speed, 6) + "    " + speedVector);
 				}
 				else if (bone.Name.Equals("HFL"))
 				{
-					//Give a reward for having progressed toward X
-					float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 5;
-					if (!float.IsNaN(temp) && !float.IsInfinity(temp))
-						reward += temp;
-					else
-						reward += bone.RigidBody.Position.X;
-
-					JVector speedVector = GetSpeed(bone, deltaTime);
-					float speed = speedVector.Length();
-
-					reward += speed * 10000 * velocityFactor;
-
-					//if (speed > 0.0001)
-					//	Console.WriteLine("HFL: " + Math.Round(speed, 6) + "    " + speedVector);
 				}
 				else if (bone.Name.Equals("HBR"))
 				{
-					//Give a reward for having progressed toward X
-					float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 5;
-					if (!float.IsNaN(temp) && !float.IsInfinity(temp))
-						reward += temp;
-					else
-						reward += bone.RigidBody.Position.X;
-
-					JVector speedVector = GetSpeed(bone, deltaTime);
-					float speed = speedVector.Length();
-
-					reward += speed * 10000 * velocityFactor;
-
-					//if (speed > 0.0001)
-					//	Console.WriteLine("HBR: " + Math.Round(speed, 6) + "    " + speedVector);
 				}
 				else if (bone.Name.Equals("HBL"))
 				{
-					//Give a reward for having progressed toward X
-					float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 5;
-					if (!float.IsNaN(temp) && !float.IsInfinity(temp))
-						reward += temp;
-					else
-						reward += bone.RigidBody.Position.X;
-
-					JVector speedVector = GetSpeed(bone, deltaTime);
-					float speed = speedVector.Length();
-
-					reward += speed * 10000 * velocityFactor;
-
-					//if (speed > 0.0001)
-					//	Console.WriteLine("HBL: " + Math.Round(speed, 6) + "    " + speedVector);
 				}
 			}
 
@@ -286,7 +345,7 @@ namespace SMART
 			rewardCounter += reward;
 			if (printCounter > 150)
 			{
-				Console.WriteLine("Reward: " + Math.Round(rewardCounter / 150, 1) + "  X: " + Math.Round(meanSubPosition.X * 0.00667f, 2));
+				Console.WriteLine("Reward: " + Math.Round(rewardCounter / 150, 5) + "  X: " + Math.Round(meanSubPosition.X * 0.00667f, 2));
 				rewardCounter = 0;
 				printCounter = 0;
 				meanSubPosition = new JVector(0, 0, 0);

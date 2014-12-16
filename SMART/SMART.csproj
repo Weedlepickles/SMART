@@ -172,6 +172,9 @@
     <Content Include="AI\AITest\mouse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="AutoSaves\random.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AI\QEngine\Saved QStates\" />

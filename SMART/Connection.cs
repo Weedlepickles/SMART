@@ -86,6 +86,14 @@ namespace SMART
 		{
 			return first.RigidBody.Position - second.RigidBody.Position;
 		}
+		public float Length
+		{
+			get
+			{
+				JVector temp = GetConnectionVector();
+				return temp.Length();
+			}
+		}
 
 		private DateTime time = DateTime.Now;
 		public void Render(Camera camera)

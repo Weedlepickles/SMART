@@ -81,20 +81,39 @@ namespace SMART
 			{
 				force = forceDirection * strength * maxForce * forceFactor;
 			}
-			second.RigidBody.AddForce(force);
-			force.Negate();
-			first.RigidBody.AddForce(force);
+
+			//second is on the ground and first is not on the ground
+			if (second.RigidBody.Position.Y < 0.01 && first.RigidBody.Position.Y >= 0.01)
+			{
+				second.RigidBody.AddForce(new JVector(0.1f * force.X, force.Y, 0.1f * force.Z));
+				force.Negate();
+				first.RigidBody.AddForce(new JVector(0.9f * force.X, force.Y, 0.9f * force.Z));
+			}
+			//second is not on the ground and first is on the ground
+			else if (second.RigidBody.Position.Y >= 0.01 && first.RigidBody.Position.Y < 0.01)
+			{
+				second.RigidBody.AddForce(new JVector(0.9f * force.X, force.Y, 0.9f * force.Z));
+				force.Negate();
+				first.RigidBody.AddForce(new JVector(0.1f * force.X, force.Y, 0.1f * force.Z));
+			}
+			else
+			{
+				second.RigidBody.AddForce(force);
+				force.Negate();
+				first.RigidBody.AddForce(force);
+			}
 		}
 
-        /// <summary>
-        /// Returns a value between 0 and 1 where 0 is its most contracted state, and 1 is the opposite
-        /// </summary>
-        /// <returns></returns>
-        public float GetState() {
-            JVector forceDirection = first.RigidBody.Position - second.RigidBody.Position;
-            float currentLength = forceDirection.Length() - connection.MinLength;
-            float maxLength = connection.MaxLength - connection.MinLength;
-            return currentLength / maxLength;
-        }
+		/// <summary>
+		/// Returns a value between 0 and 1 where 0 is its most contracted state, and 1 is the opposite
+		/// </summary>
+		/// <returns></returns>
+		public float GetState()
+		{
+			JVector forceDirection = first.RigidBody.Position - second.RigidBody.Position;
+			float currentLength = forceDirection.Length() - connection.MinLength;
+			float maxLength = connection.MaxLength - connection.MinLength;
+			return currentLength / maxLength;
+		}
 	}
 }

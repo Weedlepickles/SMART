@@ -16,7 +16,7 @@ namespace SMART
 		{
             //Run application
 			Window.Title = "S.M.A.R.T.";
-		    Window.Run(200, 60);
+		    Window.Run(200, 30);
 
             //Run Q-Learning AI test application
             //System.Windows.Forms.Application.Run(new SMART.AI.AITest.QLearningTestForm());

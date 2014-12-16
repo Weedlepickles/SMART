@@ -292,18 +292,41 @@ namespace SMART
                     }
                     else if (first.Position.Y <= 0 && second.Position.Y <= 0)
                     {
-                        firstPosition = first.Position;
-                        secondPosition = second.Position;
+						JVector temp1 = first.Position + connectionVector * lengthDifference * 0.5f;
+						JVector temp2 = second.Position - connectionVector * lengthDifference * 0.5f;
+						firstPosition = new JVector(temp1.X, 0, temp1.Z);
+						secondPosition = new JVector(temp2.X, 0, temp2.Z);
+
+						//firstPosition = first.Position;
+						//secondPosition = second.Position;
                     }
                     else if (first.Position.Y <= 0)
                     {
-                        firstPosition = first.Position;
-                        secondPosition = second.Position - connectionVector * lengthDifference;
+						JVector temp = first.Position + connectionVector * lengthDifference * 0.5f;
+						if (temp.Y > 0)
+						{
+							firstPosition = first.Position + connectionVector * lengthDifference * 0.5f;
+							secondPosition = second.Position - connectionVector * lengthDifference * 0.5f;
+						}
+						else
+						{
+							firstPosition = new JVector(first.Position.X, 0, first.Position.Z);
+							secondPosition = second.Position - connectionVector * lengthDifference;
+						}
                     }
                     else// if (second.Position.Y <= 0)
                     {
-                        firstPosition = first.Position + connectionVector * lengthDifference;
-                        secondPosition = second.Position;
+						JVector temp = second.Position - connectionVector * lengthDifference * 0.5f;
+						if (temp.Y > 0)
+						{
+							firstPosition = first.Position + connectionVector * lengthDifference * 0.5f;
+							secondPosition = second.Position - connectionVector * lengthDifference * 0.5f;
+						}
+						else
+						{
+							firstPosition = first.Position + connectionVector * lengthDifference;
+							secondPosition = new JVector(second.Position.X, 0, second.Position.Z);
+						}
                     }
 
                     //Add the first

@@ -20,6 +20,7 @@ namespace SMART
 		private KeyboardState previousKeyBoardState;
 		string[] skeletonFileNames;
 		int skeletonNumber = 0;
+		Timer timer = new Timer();
 
 		private Scene ActiveScene;
 
@@ -33,6 +34,20 @@ namespace SMART
 			this.UpdateFrame += new EventHandler<FrameEventArgs>(OnUpdateFrame);
 			previousKeyBoardState = new KeyboardState();
 			ActiveScene = new Scene(Width, Height);
+			timer.Interval = 1000 * 60 * 10;
+			timer.Tick += timer_Tick;
+			timer.Start();
+		}
+
+		void timer_Tick(object sender, EventArgs e)
+		{
+			if (ActiveScene.cow != null)
+			{
+				DateTime now = DateTime.Now;
+				string fileName = "AutoSaves\\Autosave_" + now.Year + "-" + now.Day + "-" + now.TimeOfDay.TotalMilliseconds + ".txt";
+				Console.WriteLine("Autosave done " + fileName);
+				ActiveScene.cow.SaveState(fileName);
+			}
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -65,63 +80,67 @@ namespace SMART
 
 		private void KeyHandler(TimeSpan deltaTime)
 		{
-			KeyboardState keyBoardState = OpenTK.Input.Keyboard.GetState();
-
-			if (keyBoardState[Key.Enter] && !previousKeyBoardState[Key.Enter])
+			if (this.Focused)
 			{
-				//Load new skeleton!
-				/*skeletonNumber = (skeletonNumber + 1) % skeletonFileNames.Length;
-				Console.WriteLine("Loaded " + skeletonFileNames[skeletonNumber]);
-				ActiveScene.Load(skeletonFileNames[skeletonNumber]);*/
-                ActiveScene.Reset();
-			}
-			if (keyBoardState[Key.W])
-			{
-				ActiveScene.Camera.Position = ActiveScene.Camera.Position - Vector3.UnitZ * 0.015f * (float)deltaTime.TotalMilliseconds;
-			}
-			if (keyBoardState[Key.S])
-			{
-				ActiveScene.Camera.Position = ActiveScene.Camera.Position + Vector3.UnitZ * 0.015f * (float)deltaTime.TotalMilliseconds;
-			}
-			if (keyBoardState[Key.A])
-			{
-				ActiveScene.Camera.Position = ActiveScene.Camera.Position - Vector3.UnitX * 0.015f * (float)deltaTime.TotalMilliseconds;
-			}
-			if (keyBoardState[Key.D])
-			{
-				ActiveScene.Camera.Position = ActiveScene.Camera.Position + Vector3.UnitX * 0.015f * (float)deltaTime.TotalMilliseconds;
-			}
+				KeyboardState keyBoardState = OpenTK.Input.Keyboard.GetState();
 
-            if (keyBoardState[Key.Q])
-            {
-                ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation + Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
-            }
-            if (keyBoardState[Key.E])
-            {
-                ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation - Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
-            }
+				if (keyBoardState[Key.Enter] && !previousKeyBoardState[Key.Enter])
+				{
+					//Load new skeleton!
+					/*skeletonNumber = (skeletonNumber + 1) % skeletonFileNames.Length;
+					Console.WriteLine("Loaded " + skeletonFileNames[skeletonNumber]);
+					ActiveScene.Load(skeletonFileNames[skeletonNumber]);*/
+					ActiveScene.Reset();
+				}
+				if (keyBoardState[Key.W])
+				{
+					ActiveScene.Camera.Position = ActiveScene.Camera.Position - Vector3.UnitZ * 0.015f * (float)deltaTime.TotalMilliseconds;
+				}
+				if (keyBoardState[Key.S])
+				{
+					ActiveScene.Camera.Position = ActiveScene.Camera.Position + Vector3.UnitZ * 0.015f * (float)deltaTime.TotalMilliseconds;
+				}
+				if (keyBoardState[Key.A])
+				{
+					ActiveScene.Camera.Position = ActiveScene.Camera.Position - Vector3.UnitX * 0.015f * (float)deltaTime.TotalMilliseconds;
+				}
+				if (keyBoardState[Key.D])
+				{
+					ActiveScene.Camera.Position = ActiveScene.Camera.Position + Vector3.UnitX * 0.015f * (float)deltaTime.TotalMilliseconds;
+				}
 
-            if (ActiveScene.cow != null && keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
-			{
-                if (MessageBox.Show("Save engine state?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    ActiveScene.cow.SaveState();
-                    MessageBox.Show("State saved", "info", MessageBoxButtons.OK);
-                }
-                
+				if (keyBoardState[Key.Q])
+				{
+					ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation + Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
+				}
+				if (keyBoardState[Key.E])
+				{
+					ActiveScene.Camera.Rotation = ActiveScene.Camera.Rotation - Vector3.UnitY * 0.1f * (float)deltaTime.TotalMilliseconds;
+				}
+
+				if (ActiveScene.cow != null && keyBoardState[Key.Space] && !previousKeyBoardState[Key.Space])
+				{
+					DialogResult result = MessageBox.Show("Save engine state?", "Save?", MessageBoxButtons.YesNo);
+					if (result == DialogResult.Yes)
+					{
+						ActiveScene.cow.SaveState();
+						MessageBox.Show("State saved", "info", MessageBoxButtons.OK);
+					}
+
+				}
+
+				if (keyBoardState[Key.L] && !previousKeyBoardState[Key.L])
+				{
+					if (ActiveScene.cow != null && MessageBox.Show("Load engine state?", "Load?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+					{
+						ActiveScene.cow.LoadState();
+						MessageBox.Show("State loaded", "info", MessageBoxButtons.OK);
+					}
+
+				}
+
+				previousKeyBoardState = keyBoardState;
 			}
-
-            if (keyBoardState[Key.L] && !previousKeyBoardState[Key.L])
-            {
-                if (ActiveScene.cow != null && MessageBox.Show("Load engine state?", "Load?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    ActiveScene.cow.LoadState();
-                    MessageBox.Show("State loaded", "info", MessageBoxButtons.OK);
-                }
-
-            }
-
-			previousKeyBoardState = keyBoardState;
 		}
 
 		private void UpdateState(TimeSpan deltaTime)

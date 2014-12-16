@@ -14,20 +14,23 @@ Bone HBL 10 -3 4
 
 LinkState
 Bone Root Children Sub FM BM FR FL BR BL
-Bone FR Children BR BM BL FL
+Bone FR Children BR BM BL
 Bone FM Children FR FL BR BM BL
 Bone BM Children BR BL FR FL
 Bone FL Children BL BR
-Bone BR Children BL
 Bone Sub Children FM BM FR FL BR BL
 
 Bone HFR Children FR FM HFL
-Bone HFL Children FM FL
+Bone HFL Children FL FM
 Bone HBR Children BR BM HBL
-Bone HBL Children BM BL
+Bone HBL Children BL BM
 
 Muscles
-Bone HFR BR 400
-Bone HFL BL 400
-Bone HBR FR 400
-Bone HBL FL 400
+Bone HFR BM 600
+Bone HFL BM 600
+Bone HBR FM 600
+Bone HBL FM 600
+ Bone FR HFR 600
+ Bone FL HFL 600
+ Bone BR HBR 600
+ Bone BL HBL 600
