@@ -38,7 +38,7 @@ namespace SMART
 		public CowSkeleton(string name, Vector3 position, SMARTWorld world, string fileName)
 			: base(name, position, world, fileName)
 		{
-			AIEngine = QLearningEngine.Create(4, DicretizationSteps);
+			AIEngine = QLearningEngine.Create(Muscles.Count, DicretizationSteps);
 
 			QLearningControlPanel front = new QLearningControlPanel(AIEngine);
 
@@ -126,12 +126,16 @@ namespace SMART
 			float lengthSpan = maxLength - minLength;
 			length = length - minLength;
 
-			if (length < 0.33 * lengthSpan)
+			if (length < 0.20 * lengthSpan)
 				return 0;
-			else if (length < 0.66 * lengthSpan)
+			else if (length < 0.40 * lengthSpan)
 				return 1;
-			else
+			else if (length < 0.60 * lengthSpan)
 				return 2;
+			else if (length < 0.80 * lengthSpan)
+				return 3;
+			else
+				return 4;
 
 		}
 
@@ -166,46 +170,45 @@ namespace SMART
 
 			List<int> state2 = new List<int>();
 
-			/*
+			
 			foreach (LinearMuscle muscle in Muscles)
 			{
 				state2.Add(GetMuscleState(muscle));
-			}*/
+			}
 
-			int temp1 = mFrontRightLeg.GetOmegaSteps();
-			int temp2 = mFrontRightLeg.Frequency;
-			if (temp1 > 2 || temp2 > 2)
-				throw new Exception();
-			state2.Add(temp1);
-			state2.Add(temp2);
+			//int temp1 = mFrontRightLeg.GetOmegaSteps();
+			//int temp2 = mFrontRightLeg.Frequency;
+			//if (temp1 > 2 || temp2 > 2)
+			//	throw new Exception();
+			//state2.Add(temp1);
+			//state2.Add(temp2);
 
-			temp1 = mFrontLeftLeg.GetOmegaSteps();
-			temp2 = mFrontLeftLeg.Frequency;
-			if (temp1 > 2 || temp2 > 2)
-				throw new Exception();
-			state2.Add(temp1);
-			state2.Add(temp2);
+			//temp1 = mFrontLeftLeg.GetOmegaSteps();
+			//temp2 = mFrontLeftLeg.Frequency;
+			//if (temp1 > 2 || temp2 > 2)
+			//	throw new Exception();
+			//state2.Add(temp1);
+			//state2.Add(temp2);
 
-			temp1 = mBackRightLeg.GetOmegaSteps();
-			temp2 = mBackRightLeg.Frequency;
-			if (temp1 > 2 || temp2 > 2)
-				throw new Exception();
-			state2.Add(temp1);
-			state2.Add(temp2);
+			//temp1 = mBackRightLeg.GetOmegaSteps();
+			//temp2 = mBackRightLeg.Frequency;
+			//if (temp1 > 2 || temp2 > 2)
+			//	throw new Exception();
+			//state2.Add(temp1);
+			//state2.Add(temp2);
 
-			temp1 = mBackLeftLeg.GetOmegaSteps();
-			temp2 = mBackLeftLeg.Frequency;
-			if (temp1 > 2 || temp2 > 2)
-				throw new Exception();
-			state2.Add(temp1);
-			state2.Add(temp2);
+			//temp1 = mBackLeftLeg.GetOmegaSteps();
+			//temp2 = mBackLeftLeg.Frequency;
+			//if (temp1 > 2 || temp2 > 2)
+			//	throw new Exception();
+			//state2.Add(temp1);
+			//state2.Add(temp2);
 			
 
 			//state2.Add(GetDirectionState());
 
 			int[] action = AIEngine.GetAction(state2, reward);
 
-			/*
 			int i = 0;
 			foreach (LinearMuscle muscle in Muscles)
 			{
@@ -216,17 +219,17 @@ namespace SMART
 				else
 					muscle.Strength = 1;
 				i++;
-			}*/
+			}
 
-			mFrontRightLeg.Frequency = action[3];
-			mFrontLeftLeg.Frequency = action[2];
-			mBackRightLeg.Frequency = action[1];
-			mBackLeftLeg.Frequency = action[0];
+			//mFrontRightLeg.Frequency = action[3];
+			//mFrontLeftLeg.Frequency = action[2];
+			//mBackRightLeg.Frequency = action[1];
+			//mBackLeftLeg.Frequency = action[0];
 
-			mFrontRightLeg.Update(deltaTime);
-			mFrontLeftLeg.Update(deltaTime);
-			mBackRightLeg.Update(deltaTime);
-			mBackLeftLeg.Update(deltaTime);
+			//mFrontRightLeg.Update(deltaTime);
+			//mFrontLeftLeg.Update(deltaTime);
+			//mBackRightLeg.Update(deltaTime);
+			//mBackLeftLeg.Update(deltaTime);
 
 			if (CheckIfRestartNeeded())
 			{
@@ -311,31 +314,33 @@ namespace SMART
 			{
 				if (bone.Name.Equals("Sub"))
 				{
-					reward += bone.RigidBody.Position.X * 0.0001f + 0.1f;
-					reward += bone.RigidBody.Position.Y * 0.000001f;
+					//reward += bone.RigidBody.Position.X * 0.0001f + 0.1f;
+					reward += bone.RigidBody.Position.Y * 0.0001f;
 
 					meanSubPosition = meanSubPosition + bone.RigidBody.Position;
 
-					/*
+					
 					//Give a reward for having progressed toward X
-					float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 20;
-					if (!float.IsNaN(temp) && !float.IsInfinity(temp))
-						reward += temp;
-					else
-						reward += -(bone.RigidBody.Position.X * bone.RigidBody.Position.X);
+					//float temp = (float)Math.Log10(bone.RigidBody.Position.X) * 20;
+					//if (!float.IsNaN(temp) && !float.IsInfinity(temp))
+					//	reward += temp;
+					//else
+					//	reward += -(bone.RigidBody.Position.X * bone.RigidBody.Position.X);
 
-					reward += bone.RigidBody.Position.Y * heightFactor;
+					//reward += bone.RigidBody.Position.Y * heightFactor;
 
-					JVector speedVector = GetSpeed(bone, deltaTime);
+					//JVector speedVector = GetSpeed(bone, deltaTime);
+					JVector speedVector = CalculateSpeed(deltaTime);
 					float speed = speedVector.X;
-
-					reward += speed * 10000 * velocityFactor;
+					if (speed < 0)
+						speed = 0;
+					reward += speed * 0.1f;
 
 					meanSubPosition = meanSubPosition + bone.RigidBody.Position;
 
 					//if (printCounter == 1)
 					//	Console.WriteLine("Sub position X: " + meanSubPosition + bone.RigidBody.Position);
-					 */
+					
 				}
 				else if (bone.Name.Equals("HFR"))
 				{
